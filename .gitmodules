@@ -1,0 +1,3 @@
+[submodule "lib/node-sqlite"]
+	path = lib/node-sqlite
+	url = git://github.com/orlandov/node-sqlite.git
