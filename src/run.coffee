@@ -27,6 +27,7 @@ server.get '/albums/:album', (req, res) ->
   page = req.query.page || 1
   app.getAlbum req.params.album, page, (err, album) ->
     if err then throw err
+    if not album then throw 'Album not found: ' + req.params.album
     app.countPictures album, (err, count) ->
       if err then throw err
       res.render 'album', {
@@ -45,6 +46,7 @@ server.get '/pictures/:album/:picture.:ext', (req, res) ->
   picture = req.params.picture + '.' + req.params.ext
   app.getPicture album, picture, (err, picinfo) ->
     if err then throw err
+    if not picture then throw 'Picture not found: ' + req.params.album
     res.render 'picture', {
         locals: {
           pagetitle: picinfo.name

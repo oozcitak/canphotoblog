@@ -232,7 +232,7 @@ class CanPhotoBlog
       # picture count
       (err, rows) ->
         if err then throw err
-        if not rows then throw 'Error reading album ' + key + ' from database.'
+        if not rows or rows.length is 0 then throw 'Error reading album ' + key + ' from database.'
         album = rows[0]
         self.countPictures album, @
         return undefined
@@ -330,6 +330,7 @@ class CanPhotoBlog
       # read picture
       (err, picturerows, albumrows, comments) ->
         if err then throw err
+        if not picturerows or picturerows.length is 0 then throw 'Error reading picture ' + key + ' from database.'
 
         picture = {}
         for i in [0...picturerows.length]
