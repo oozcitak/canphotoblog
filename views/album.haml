@@ -1,0 +1,8 @@
+%ul.gallery
+  :each picture in album.pictures
+    %li
+      .thumb
+        .thumb-pic
+          %a{ href: picture.url }
+            %img{ alt: picture.name, src: picture.thumbnail }/
+

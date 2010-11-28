@@ -1,0 +1,12 @@
+%ul.gallery
+  :each album in albums
+    %li
+      .thumb.album
+        .thumb-pic
+          %a{ href: album.url }
+            %img{ alt: album.name, src: album.thumbnail }/
+        .thumb-name
+          = album.name
+        .thumb-info
+          = album.count + ' pictures'
+

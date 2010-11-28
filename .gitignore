@@ -1,0 +1,4 @@
+lib/
+logs/
+.project
+album.sqlite

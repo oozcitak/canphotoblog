@@ -1,0 +1,16 @@
+.pic
+
+  :if picture.next
+    %a{ href: picture.next }
+      %img{ alt: picture.name, src: picture.url }/
+
+  :if !picture.next
+    %img{ alt: picture.name, src: picture.url }/
+
+
+
+%ul.comments
+  :each comment in picture.comments
+    %li
+      = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+
