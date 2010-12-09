@@ -1,23 +1,23 @@
 app = require './app'
+cutil = require './util'
 express = require 'express'
 server = express.createServer ()
 util = require 'util'
 path = require 'path'
-fs = require 'fs'
 
 
 # GET /
 server.get '/', (req, res) ->
   page = req.query.page || 1
-  app.getAlbums page, (err, albums) ->
+  app.albums.getAlbums page, app.settings.albumsPerPage, (err, albums) ->
     if err then throw err
-    app.countAlbums (err, count) ->
+    app.albums.countAlbums (err, count) ->
       if err then throw err
       res.render 'index', {
           locals: {
             page: page
             albums: albums
-            pagination: app.makePagination req.url, Math.ceil(count / app.albumsPerPage)
+            pagination: cutil.makePagination req.url, Math.ceil(count / app.settings.albumsPerPage)
           }
         }
 
@@ -25,17 +25,17 @@ server.get '/', (req, res) ->
 # GET /albums/album
 server.get '/albums/:album', (req, res) ->
   page = req.query.page || 1
-  app.getAlbum req.params.album, page, (err, album) ->
+  app.albums.getAlbum req.params.album, page, app.settings.picturesPerPage, (err, album) ->
     if err then throw err
     if not album then throw 'Album not found: ' + req.params.album
-    app.countPictures album, (err, count) ->
+    app.albums.countPictures album, (err, count) ->
       if err then throw err
       res.render 'album', {
           locals: {
             page: page
             album: album
             pagetitle: album.name
-            pagination: app.makePagination req.url, Math.ceil(count / app.picturesPerPage)
+            pagination: cutil.makePagination req.url, Math.ceil(count / app.settings.picturesPerPage)
           }
         }
 
@@ -44,7 +44,7 @@ server.get '/albums/:album', (req, res) ->
 server.get '/pictures/:album/:picture.:ext', (req, res) ->
   album = req.params.album
   picture = req.params.picture + '.' + req.params.ext
-  app.getPicture album, picture, (err, picinfo) ->
+  app.pictures.getPicture album, picture, (err, picinfo) ->
     if err then throw err
     if not picture then throw 'Picture not found: ' + req.params.album
     res.render 'picture', {
@@ -53,24 +53,6 @@ server.get '/pictures/:album/:picture.:ext', (req, res) ->
           picture: picinfo
         }
       }
-
-
-# GET /thumbs/album/picture.ext
-# Create the thumbnail on first request. Subsequent
-# requests should be served by nginx with the thumbnail
-# generated here.
-server.get '/thumbs/:album/:picture.:ext', (req, res) ->
-  album = req.params.album
-  picture = req.params.picture + '.' + req.params.ext
-  filename = path.join app.thumbDir, album, picture
-  app.makeThumbnail album, picture, (err) ->
-    if err then throw err
-    fs.readFile filename, (err, data) ->
-      if err then throw err
-      headers = { 'Content-Type': 'image/jpeg' }
-      res.writeHead 200, headers
-      res.write data, 'binary'
-      res.end ()
 
 
 # Errors
@@ -97,12 +79,13 @@ app.init (err) ->
     server.set 'view engine', 'haml'
     server.set 'views', path.join(path.dirname(__dirname), 'views')
     server.helpers {
-        appname: app.appName
-        apptitle: app.appTitle
+        appname: app.settings.appName
+        apptitle: app.settings.appTitle
         pagetitle: ''
         pagination: null
         album: null
         picture: null
+        gaKey: app.settings.gaKey
       }
     # start listening
     server.listen 8124

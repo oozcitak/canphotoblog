@@ -15,55 +15,56 @@
     %link{ rel: "stylesheet", href: "/css/style.css" }/
     %script{ src: "/js/lib/modernizr-1.6.min.js" }
 
-%body
+  %body
 
-  #wrap
-    #main
+    #wrap
+      #main
 
-      #header
-        %ul
-          %li.first
-            %a{ href: "/" }
-              = apptitle
-          :if album
-            %li
-              = album.name
-          :if picture
-            %li
-              %a{ href: picture.album.url } 
-                = picture.album.name
-            %li
-              = picture.name
+        #header
+          %ul
+            %li.first
+              %a{ href: "/" }
+                = apptitle
+            :if album
+              %li
+                = album.name
+            :if picture
+              %li
+                %a{ href: picture.album.url } 
+                  = picture.album.name
+              %li
+                = picture.name
 
-      #container
-        = body
-        .clearfix
+        #container
+          = body
+          .clearfix
 
-      :if pagination
-        .pagination
-          :each page in pagination
-            :if !page.islink
-              %span
-                = page.text
-            :if page.islink
-              %a{ href: page.url }
-                = page.text
+        :if pagination
+          .pagination
+            :each page in pagination
+              :if !page.islink
+                %span
+                  = page.text
+              :if page.islink
+                %a{ href: page.url }
+                  = page.text
 
-  #footer
-    powered by 
-    %a{ href: "http://github.com/oozcitak/canphotoblog" }
-      canphotoblog
-    &nbsp;|&nbsp;
-    %a{ href: "/login" }
-      login
+    #footer
+      powered by 
+      %a{ href: "http://github.com/oozcitak/canphotoblog" }
+        canphotoblog
+      &nbsp;|&nbsp;
+      %a{ href: "/login" }
+        login
 
-  :javascript
-     var _gaq = [['_setAccount', 'UA-XXXXXXXX-1'], ['_trackPageview']];
-     (function(d, t) {
-      var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      g.async = true;
-      g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      s.parentNode.insertBefore(g, s);
-     })(document, 'script');
+    :if gaKey
+      :javascript
+        var _gaq = [['_setAccount', '#{gaKey}'], ['_trackPageview']];
+         (function(d, t) {
+          var g = d.createElement(t),
+              s = d.getElementsByTagName(t)[0];
+          g.async = true;
+          g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          s.parentNode.insertBefore(g, s);
+         })(document, 'script');
 
