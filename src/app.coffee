@@ -1,97 +1,194 @@
+express = require 'express'
 path = require 'path'
 fs = require 'fs'
 util = require 'util'
+url = require 'url'
 step = require 'step'
 akismet = require 'akismet'
-cutil = require './util'
+sqlite = require 'sqlite'
+cutil = require './libs/util'
 
 
-Database = require './database'
-Comments = require './comments'
-Albums = require './albums'
-Pictures = require './pictures'
-UploadMonitor = require './monitor'
+# Configure and start server
+app = express.createServer()
+app.configure () ->
 
+  dbexists = true
+  db = null
+  settings = {}
 
-class CanPhotoBlog
+  step(
 
+    # settings
+    () ->
+      appRoot = path.dirname __dirname
 
-  # Creates a new App
-  constructor: () ->
-    @albumDir = path.join path.dirname(__dirname), 'public', 'albums'
-    @thumbDir =  path.join path.dirname(__dirname), 'public', 'thumbs'
-    @uploadDir =  path.join path.dirname(__dirname), 'uploads'
-    @dbFile = path.join path.dirname(__dirname), 'album.sqlite'
-    @akismetClient = null
+      # express settings
+      app.set 'view engine', 'haml'
+      app.set 'views', path.join(appRoot, 'views')
 
+      # settings
+      settings = {
+        albumDir: path.join appRoot, 'public', 'albums'
+        thumbDir: path.join appRoot, 'public', 'thumbs'
+        uploadDir: path.join appRoot, 'uploads'
+        dbFile: path.join appRoot, 'album.sqlite'
+        akismetClient: null
+        watchInterval: 1 * 60 * 1000
+      }
 
-  # Initializes the application
-  #
-  # callback: err
-  init: (callback) ->
+      # check database
+      cutil.fileExists settings.dbFile, @
+      return undefined
 
-    callback = cutil.ensureCallback callback
-    dbexists = true
-    self = @
+    # open database
+    (err, exists) ->
+      if err then throw err
+      dbexists = exists
+      db = new sqlite.Database()
+      app.set 'db', db
+      db.open settings.dbFile, @
+      return undefined
 
-    step(
-     
-      # open database
-      () ->
-        db = new Database (self.dbFile)
-        db.init @
+    # make database if it does not exist
+    (err) ->
+      if err then throw err
+
+      if dbexists
+        return null
+      else
+        db.executeScript 'DROP TABLE IF EXISTS "Albums";' +
+          'DROP TABLE IF EXISTS "Pictures";' +
+          'DROP TABLE IF EXISTS "Comments";' +
+          'DROP TABLE IF EXISTS "Settings";' +
+          'DROP TABLE IF EXISTS "Users";' +
+          'CREATE TABLE "Albums" ("id" INTEGER PRIMARY KEY, "name", "path", "dateCreated", "title", "text");' +
+          'CREATE TABLE "Pictures" ("id" INTEGER PRIMARY KEY, "name", "path", "dateTaken", "album", "title", "text");' +
+          'CREATE TABLE "Comments" ("id" INTEGER PRIMARY KEY, "from", "text", "dateCommented", "album", "picture", "spam", "ip");' +
+          'CREATE TABLE "Users" ("name" PRIMARY KEY, "password");' +
+          'CREATE TABLE "Settings" ("name" PRIMARY KEY, "value");' +
+          'CREATE INDEX "albums_name" ON "Albums" ("name");' +
+          'CREATE INDEX "pictures_name" ON "Pictures" ("name");' +
+          'CREATE INDEX "pictures_album" ON "Pictures" ("album");' +
+          'CREATE INDEX "comments_album" ON "Comments" ("album");' +
+          'CREATE INDEX "comments_picture" ON "Comments" ("picture");' +
+          'CREATE INDEX "comments_spam" ON "Comments" ("spam");' +
+          'INSERT INTO "Users" ("name", "password") VALUES ("admin", "' + cutil.makeHash('admin') + '");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("albumsPerPage", "20");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("picturesPerPage", "40");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("appName", "canphotoblog");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("appTitle", "canphotoblog");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("akismetKey", "");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("akismetURL", "");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("gaKey", "");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("thumbSize", "150");', @
         return undefined
+          
+    # read settings
+    (err) ->
+      if err then throw err
+      db.execute 'SELECT * FROM "Settings"', @
+      return undefined
 
-      # check if directories exist
-      (err, db, settings) ->
-        if err then throw err
-        self.db = db
-        self.settings = settings
+    # add to app settings
+    (err, rows) ->
+      if err then throw err
+      if not rows then throw 'Unable to read application settings.'
 
-        cutil.fileExists self.albumDir, @parallel ()
-        cutil.fileExists self.thumbDir, @parallel ()
-        cutil.fileExists self.uploadDir, @parallel ()
+      settings = cutil.joinObjects settings, rows
+      app.set 'settings', settings
+
+      # check folders
+      cutil.fileExists settings.albumDir, @parallel()
+      cutil.fileExists settings.thumbDir, @parallel()
+      cutil.fileExists settings.uploadDir, @parallel()
+      return undefined
+
+    # create directories
+    (err, albumsExists, thumbsExists, uploadsExists) ->
+      if err then throw err
+      if albumsExists and thumbsExists and uploadsExists then return null
+
+      if not albumsExists then fs.mkdir settings.albumDir, 0755, @parallel()
+      if not thumbsExists then fs.mkdir settings.thumbDir, 0755, @parallel()
+      if not uploadsExists then fs.mkdir settings.uploadDir, 0755, @parallel()
+      return undefined
+
+    # create akismet client
+    (err) ->
+      if err then throw err
+
+      if settings.akismetKey and settings.akismetURL
+        akismetClient = akismet.client { apiKey: settings.akismetKey, blog: settings.akismetURL }
+        app.set 'akismet', akismetClient
+        akismetClient.verifyKey @
         return undefined
-
-      # create directories
-      (err, albumsExists, thumbsExists, uploadsExists) ->
-        if err then throw err
-        if albumsExists and thumbsExists and uploadsExists then return null
-        if not albumsExists then fs.mkdir self.albumDir, 0755, @parallel ()
-        if not thumbsExists then fs.mkdir self.thumbDir, 0755, @parallel ()
-        if not uploadsExists then fs.mkdir self.uploadDir, 0755, @parallel ()
-        return undefined
-
-      # create akismet client
-      (err) ->
-        if err then throw err
-        if self.settings.akismetKey and self.settings.akismetURL
-          self.akismetClient = akismet.client { apiKey: self.settings.akismetKey, blog: self.settings.akismetURL }
-          self.akismetClient.verifyKey @
-          return undefined
+      else
         return null
 
-      # execute callback
-      (err, verified) ->
-        if err then throw err
+    # end of config
+    (err, verified) ->
+      if err then throw err
 
-        # check akismet
-        if verified is false
-          util.log 'Could not verify Akismet key.'
-          self.akismetClient = null
+      # check akismet
+      if verified is true
+        util.log 'Verified Akismet key'
+      if verified is false
+        util.log 'Could not verify Akismet key.'
+        app.set 'akismet', null
 
-        # watch uploads
-        self.monitor = new UploadMonitor(self.db, self.albumDir, self.thumbDir, self.uploadDir)
-        self.monitor.start ()
+      # start upload monitor
+      UploadMonitor = require './libs/monitor'
+      monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.watchInterval)
+      monitor.start()
 
-        self.albums = new Albums(self.db)
-        self.pictures = new Pictures(self.db)
-        self.comments = new Comments(self.db, self.akismetClient)
+      # include controllers
+      for file in fs.readdirSync path.join(__dirname, 'controllers')
+        filename = path.join __dirname, 'controllers', file
+        if fs.statSync(filename).isFile()
+          require './controllers/' + path.basename(file, path.extname(file))
 
-        util.log 'Application initialized.'
-        callback (err)
-    )
+      # set view helpers
+      app.helpers {
+        appname: settings.appName
+        apptitle: settings.appTitle
+        pagetitle: ''
+        pageCount: 0
+        album: null
+        picture: null
+        gaKey: settings.gaKey
+      }
+
+      # dynamic view helpers
+      app.dynamicHelpers {
+        pagination: (req, res) ->
+          pages = app.viewHelpers.pageCount
+          if pages <= 1 then return null
+
+          page = 1
+          parts = url.parse req.url, true
+          if not parts.query? then parts.query = { page: '1' }
+          if not parts.query.page? then parts.query.page = '1'
+          page = parts.query.page
+
+          pagination = []
+          for i in [1...(1 + pages)]
+            opage = {}
+            opage.text = String(i)
+            opage.selected = if String(i) is page then true else false
+            opage.islink = !opage.selected
+            parts.query.page = String(i)
+            opage.url = url.format parts
+            pagination.push opage
+
+          return pagination
+      }
+
+      # start listening
+      app.listen 8124
+      util.log 'Application started.'
+  )
 
 
-module.exports = new CanPhotoBlog
+module.exports = app
 

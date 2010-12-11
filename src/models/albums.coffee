@@ -1,6 +1,5 @@
 step = require 'step'
-cutil = require './util'
-
+cutil = require '../libs/util'
 
 class Albums
 
@@ -57,9 +56,9 @@ class Albums
         if err then throw err
         albums = rows
         if albums.length is 0 then return []
-        group = @group ()
+        group = @group()
         for album in albums
-          self.countPictures album.name, group ()
+          self.countPictures album.name, group()
         return undefined
  
       # read pictures
@@ -67,10 +66,10 @@ class Albums
         if err then throw err
         if albums.length isnt counts.length then throw 'Unable to read picture counts.'
         if albums.length is 0 then return []
-        group = @group ()
+        group = @group()
         for i in [0...albums.length]
           albums[i].count = counts[i]
-          self.getPictures albums[i].name, 1, 1, group ()
+          self.getPictures albums[i].name, 1, 1, group()
         return undefined
       
       # execute callback
@@ -100,10 +99,10 @@ class Albums
 
       # get album
       () ->
-        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel ()
-        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=null', [name], @parallel ()
-        self.countPictures name, @parallel ()
-        self.getPictures name, page, count, @parallel ()
+        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=null', [name], @parallel()
+        self.countPictures name, @parallel()
+        self.getPictures name, page, count, @parallel()
         return undefined
 
       # read album

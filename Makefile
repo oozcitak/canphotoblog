@@ -1,7 +1,10 @@
 dev: libs
 	@echo 'Building...'
 	@test `which coffee` || echo 'You need to have CoffeeScript installed.'
-	@coffee -c -o lib src/*.coffee
+	@coffee -c -o lib/libs/ src/libs/*.coffee
+	@coffee -c -o lib/models/ src/models/*.coffee
+	@coffee -c -o lib/controllers/ src/controllers/*.coffee
+	@coffee -c -o lib/ src/*.coffee
 
 libs: clean
 	@echo 'Copying libraries'

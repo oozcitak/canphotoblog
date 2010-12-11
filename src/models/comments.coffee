@@ -1,5 +1,5 @@
 step = require 'step'
-cutil = require './util'
+cutil = require '../libs/util'
 
 
 class Comments
@@ -7,11 +7,10 @@ class Comments
 
   # Creates a new comments object
   #
-  # db: album database connection object
-  # akismet: akismet client
-  constructor: (db, akismet) ->
+  # db: database connection object
+  constructor: (db, akismetClient) ->
     @db = db
-    @akismetClient = akismet
+    @akismetClient = akismetClient
 
 
   # Adds a new comment

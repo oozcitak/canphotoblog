@@ -1,14 +1,18 @@
 fs = require 'fs'
 path = require 'path'
-im = require './libs/imagemagick'
+im = require '../libs/imagemagick'
 cutil = require './util'
 
 
 # Includes image utilities
-class Image
-
+module.exports = {
 
   # Makes a thumbnail image
+  #
+  # source: path to source image
+  # dest: path to thumbail file
+  # width: thumbail size
+  # callback: err
   makeThumbnail: (source, dest, width, callback) ->
 
     callback = cutil.ensureCallback callback
@@ -62,7 +66,12 @@ class Image
 
 
   # Makes thumbnail images for all images in the source folder.
-  # Thumbnails are saved to the dest folder.
+  # Thumbnails are saved to the destination folder.
+  #
+  # sourceDir: path to source folder
+  # destDir: path to destination folder
+  # width: thumbnail size
+  # callback: err
   makeAllThumbnails: (sourceDir, destDir, width, callback) ->
 
     callback = cutil.ensureCallback callback
@@ -114,6 +123,9 @@ class Image
   # Returns a Date object representing the date the source image
   # was taken. If Exif date field does not exist falls back to the
   # date the image was last modified.
+  # 
+  # source: path to source image
+  # callback: err, date object
   getDate: (source, callback) ->
 
     callback = cutil.ensureCallback callback
@@ -147,7 +159,9 @@ class Image
     )
 
 
-  # Converts exif date/time (yyyy:mm:dd hh:mm:ss) to js date/time
+  # Converts exif date/time to js date/time object
+  #
+  # str: Exif formatted date/time string (yyyy:mm:dd hh:mm:ss) 
   dateFromExif: (str) ->
     parts = str.split " "
     d = parts[0]
@@ -157,6 +171,5 @@ class Image
     tp = t.split ':'
     return new Date dp[0], dp[1], dp[2], tp[0], tp[1], tp[2], 0
 
-
-module.exports = new Image
+}
 

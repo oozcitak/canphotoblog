@@ -1,5 +1,6 @@
+app = module.parent.exports
 step = require 'step'
-cutil = require './util'
+cutil = require '../libs/util'
 
 
 class Pictures
@@ -10,6 +11,7 @@ class Pictures
   # db: database connection object
   constructor: (db) ->
     @db = db
+    @db = app.db
 
 
   # Gets the picture with the given name
@@ -26,9 +28,9 @@ class Pictures
 
       # get picture
       () ->
-        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel ()
-        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel ()
-        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=?', [album, pic], @parallel ()
+        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel()
+        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=?', [album, pic], @parallel()
         return undefined
       
       # read picture

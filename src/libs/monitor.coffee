@@ -12,17 +12,17 @@ class UploadMonitor
 
   # Creates a new upload monitor
   #
-  # db: the album database connection object
+  # db: database connection object
   # albumDir: path to album directory
   # thumbDir: path to thumbnail directory
-  # uploadDir: path to uploads
-  constructor: (db, albumDir, thumbDir, uploadDir) ->
+  # uploadDir: path to uploads directory
+  # watchInterval: time in milliseconds between new album checks
+  constructor: (db, albumDir, thumbDir, uploadDir, watchInterval) ->
     @db = db
     @albumDir = albumDir
     @thumbDir =  thumbDir
     @uploadDir =  uploadDir
-    # check for new uploads every minute
-    @watchInterval = 1 * 60 * 1000
+    @watchInterval = watchInterval
 
 
   # Starts watching the uploads folder
@@ -60,12 +60,12 @@ class UploadMonitor
         albumSQL = 'INSERT INTO "Albums" ("name", "path") VALUES (?, ?)'
         pictureSQL = 'INSERT INTO "Pictures" ("name", "path", "dateTaken", "album") VALUES (?, ?, ?, ?)'
 
-        group = @group ()
+        group = @group()
         for album in albums
-          self.db.execute albumSQL, [album.name, album.path], group ()
+          self.db.execute albumSQL, [album.name, album.path], group()
 
           for picture in album.pictures
-            self.db.execute pictureSQL, [picture.name, picture.path, picture.dateTaken, album.name], group ()
+            self.db.execute pictureSQL, [picture.name, picture.path, picture.dateTaken, album.name], group()
 
         return undefined
 
@@ -73,9 +73,9 @@ class UploadMonitor
       (err) ->
         if err then throw err
         
-        group = @group ()
+        group = @group()
         for album in albums
-          fs.rename album.path, path.join(self.albumDir, album.name), group ()
+          fs.rename album.path, path.join(self.albumDir, album.name), group()
         return undefined
         
       # done
@@ -107,11 +107,11 @@ class UploadMonitor
       (err, dirNames) ->
         if err then throw err
         if dirNames? and dirNames.length is 0 then return []
-        group = @group ()
+        group = @group()
         for dirName in dirNames
           dir = path.join root, dirName
           if fs.statSync(dir).isDirectory()
-            self.readAlbumFromFS dir, group ()
+            self.readAlbumFromFS dir, group()
         return undefined
 
       # return albums
@@ -166,9 +166,9 @@ class UploadMonitor
       # read date taken
       (err) ->
         if err then throw err
-        group = @group ()
+        group = @group()
         for pic in album.pictures
-          im.getDate pic.path, group ()
+          im.getDate pic.path, group()
         return undefined
 
       # save date taken
