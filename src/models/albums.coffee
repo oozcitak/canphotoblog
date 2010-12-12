@@ -1,4 +1,5 @@
 step = require 'step'
+path = require 'path'
 cutil = require '../libs/util'
 
 class Albums
@@ -30,6 +31,11 @@ class Albums
         callback err, rows[0].count
     )
 
+
+  # Gets the thumbnail URL for the given picture
+  thumbURL: (album, pic) ->
+    return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'
+    
 
   # Gets all albums starting at the given page
   #
@@ -77,7 +83,7 @@ class Albums
         if albums.length isnt pics.length then throw 'Unable to read pictures.'
         for i in [0...albums.length]
           albums[i].url = '/albums/' + albums[i].name
-          albums[i].thumbnail = '/thumbs/' + albums[i].name + '/' + pics[i][0].name
+          albums[i].thumbnail = self.thumbURL albums[i].name, pics[i][0].name
         callback err, albums
     )
 
@@ -115,7 +121,7 @@ class Albums
         album.count = count
         album.pictures = pics
         album.url = '/albums/' + album.name
-        album.thumbnail = '/thumbs/' + album.name + '/' + album.pictures[0].name
+        album.thumbnail = self.thumbURL album.name, album.pictures[0].name
         callback err, album
     )
 
@@ -169,7 +175,7 @@ class Albums
         pictures = []
         for picture in rows
           picture.url = '/pictures/' + name + '/' + picture.name
-          picture.thumbnail = '/thumbs/' + name + '/' + picture.name
+          picture.thumbnail = self.thumbURL name, picture.name
           pictures.push picture
 
         callback err, pictures

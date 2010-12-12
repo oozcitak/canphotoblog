@@ -49,13 +49,21 @@ module.exports = {
         if exists
           return null
         else
-          args = [
-              source,
-              '-strip',
-              '-thumbnail',
-              width + 'x' + width,
-              dest
-            ]
+         args = [
+            source
+            '-strip',
+            '-thumbnail',
+            width + 'x' + width,
+            '-background'
+            'none'
+            '-gravity'
+            'center'
+            '-extent'
+            width + 'x' + width
+            '-format'
+            'png'
+            dest
+          ]
           im.convert args, @
           return undefined
 
@@ -97,10 +105,19 @@ module.exports = {
       # build thumbnails
       (err, exists) ->
         if err then throw err
+
         args = [
             '-strip',
             '-thumbnail',
             width + 'x' + width,
+            '-background'
+            'none'
+            '-gravity'
+            'center'
+            '-extent'
+            width + 'x' + width
+            '-format'
+            'png'
             '-path',
             destDir
             path.join sourceDir, '*.jpg'
