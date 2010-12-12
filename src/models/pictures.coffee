@@ -11,7 +11,6 @@ class Pictures
   # db: database connection object
   constructor: (db) ->
     @db = db
-    @db = app.db
 
 
   # Gets the picture with the given name
@@ -30,7 +29,7 @@ class Pictures
       () ->
         self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel()
         self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=?', [album, pic], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=?', [album, pic], @parallel()
         return undefined
       
       # read picture
@@ -40,7 +39,7 @@ class Pictures
 
         picture = {}
         for i in [0...picturerows.length]
-          if picturerows[i].name is name
+          if picturerows[i].name is pic
             picture = picturerows[i]
             picture.prev = null
             picture.next = null

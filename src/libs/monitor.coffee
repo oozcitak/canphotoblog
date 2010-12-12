@@ -16,12 +16,14 @@ class UploadMonitor
   # albumDir: path to album directory
   # thumbDir: path to thumbnail directory
   # uploadDir: path to uploads directory
+  # thumbSize: size of generated thumbnails
   # watchInterval: time in milliseconds between new album checks
-  constructor: (db, albumDir, thumbDir, uploadDir, watchInterval) ->
+  constructor: (db, albumDir, thumbDir, uploadDir, thumbSize, watchInterval) ->
     @db = db
     @albumDir = albumDir
     @thumbDir =  thumbDir
     @uploadDir =  uploadDir
+    @thumbSize = thumbSize
     @watchInterval = watchInterval
 
 
@@ -45,6 +47,7 @@ class UploadMonitor
       setTimeout self.watchUploads(), self.watchInterval
       return
     self.readingAlbums = true
+    albums = []
 
     step(
 
@@ -54,18 +57,19 @@ class UploadMonitor
         return undefined
 
       # save albums
-      (err, albums) ->
+      (err, newalbums) ->
         if err then throw err
+        albums = newalbums
 
-        albumSQL = 'INSERT INTO "Albums" ("name", "path") VALUES (?, ?)'
-        pictureSQL = 'INSERT INTO "Pictures" ("name", "path", "dateTaken", "album") VALUES (?, ?, ?, ?)'
+        albumSQL = 'INSERT INTO "Albums" ("name", "dateCreated") VALUES (?, ?)'
+        pictureSQL = 'INSERT INTO "Pictures" ("name", "dateTaken", "album") VALUES (?, ?, ?)'
 
         group = @group()
         for album in albums
-          self.db.execute albumSQL, [album.name, album.path], group()
+          self.db.execute albumSQL, [album.name, cutil.dateToSQLite(album.dateCreated)], group()
 
           for picture in album.pictures
-            self.db.execute pictureSQL, [picture.name, picture.path, picture.dateTaken, album.name], group()
+            self.db.execute pictureSQL, [picture.name, cutil.dateToSQLite(picture.dateTaken), album.name], group()
 
         return undefined
 
@@ -75,7 +79,7 @@ class UploadMonitor
         
         group = @group()
         for album in albums
-          fs.rename album.path, path.join(self.albumDir, album.name), group()
+          fs.rename path.join(self.uploadDir, album.name), path.join(self.albumDir, album.name), group()
         return undefined
         
       # done
@@ -148,19 +152,18 @@ class UploadMonitor
           file = path.join root, fileName
           if fs.statSync(file).isFile()
             pic = {
-              path: file
               name: fileName
             }
             pics.push pic
 
         album = {
-          path: root
           name: albumName
           pictures: pics
+          dateCreated: new Date()
         }
 
         # create thumbnails
-        im.makeAllThumbnails album.path, path.join(self.thumbDir, album.name), self.thumbSize, @
+        im.makeAllThumbnails root, path.join(self.thumbDir, album.name), self.thumbSize, @
         return undefined
 
       # read date taken
@@ -168,7 +171,7 @@ class UploadMonitor
         if err then throw err
         group = @group()
         for pic in album.pictures
-          im.getDate pic.path, group()
+          im.getDate path.join(root, pic.name), group()
         return undefined
 
       # save date taken

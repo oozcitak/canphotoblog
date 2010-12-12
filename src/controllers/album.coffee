@@ -18,7 +18,7 @@ app.get '/albums/:album', (req, res) ->
 
     # get album
     () ->
-      albums.getAlbum album, page, settings.picturesPerPage @parallel()
+      albums.getAlbum album, page, settings.picturesPerPage, @parallel()
       albums.countPictures album, @parallel()
       return undefined
 

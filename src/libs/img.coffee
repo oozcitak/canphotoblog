@@ -1,5 +1,6 @@
 fs = require 'fs'
 path = require 'path'
+step = require 'step'
 im = require '../libs/imagemagick'
 cutil = require './util'
 
@@ -136,7 +137,7 @@ module.exports = {
 
       # check exif info
       () ->
-        im.identify ['-format', '%[exif:DateTimeOriginal'], source, @
+        im.identify ['-format', '%[exif:DateTimeOriginal]', source], @
         return undefined
 
       # fall back to FS

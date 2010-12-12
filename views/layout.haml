@@ -36,6 +36,12 @@
                 = picture.name
 
         #container
+          :if messages
+            .gendiv.error
+              :each msg in messages
+                %p
+                  = msg
+
           = body
           .clearfix
 
@@ -53,9 +59,19 @@
       powered by 
       %a{ href: "http://github.com/oozcitak/canphotoblog" }
         canphotoblog
-      &nbsp;|&nbsp;
-      %a{ href: "/login" }
-        login
+
+      :if user
+        &nbsp;|&nbsp;
+        %a{ href: "/admin" }
+          admin
+        &nbsp;|&nbsp;
+        %a{ href: "/logout" }
+          logout
+
+      :if !user
+        &nbsp;|&nbsp;
+        %a{ href: "/login" }
+          login
 
     :if gaKey
       :javascript

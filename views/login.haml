@@ -1,0 +1,19 @@
+.gendiv
+
+  %h1
+    login
+
+  %form{ method: "post", action: "/login" }
+    %p
+      %label{ for: "username" }
+        Username:
+      %input{ type: "text", name: "username", id: "username" }/
+
+    %p
+      %label{ for: "password" }
+        Password:
+      %input{ type: "password", name: "password", id: "password" }/
+
+    %p
+      %input{ type: "submit", value: "Login" }/
+

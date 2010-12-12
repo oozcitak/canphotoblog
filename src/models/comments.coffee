@@ -45,7 +45,7 @@ class Comments
         if err then throw err
         if not spam? then spam = false
         self.db.execute 'INSERT INTO "Comments" ("album", "picture", "from", "text", "dateCommented", "spam", "ip") ' +
-          ' VALUES (?, ?, ?, ?, datetime("now"), ?, ?)', [album, picture, name, text, spam, ip], @
+          ' VALUES (?, ?, ?, ?, ?, ?, ?)', [album, picture, name, text, new Date().getTime(), spam, ip], @
         return undefined
 
       # execute callback

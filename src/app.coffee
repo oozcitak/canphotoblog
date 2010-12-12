@@ -27,6 +27,10 @@ app.configure () ->
       app.set 'view engine', 'haml'
       app.set 'views', path.join(appRoot, 'views')
 
+      app.use express.bodyDecoder()
+      app.use express.cookieDecoder()
+      app.use express.session()
+
       # settings
       settings = {
         albumDir: path.join appRoot, 'public', 'albums'
@@ -34,7 +38,7 @@ app.configure () ->
         uploadDir: path.join appRoot, 'uploads'
         dbFile: path.join appRoot, 'album.sqlite'
         akismetClient: null
-        watchInterval: 1 * 60 * 1000
+        watchInterval: 1000 #1 * 60 * 1000
       }
 
       # check database
@@ -62,10 +66,10 @@ app.configure () ->
           'DROP TABLE IF EXISTS "Comments";' +
           'DROP TABLE IF EXISTS "Settings";' +
           'DROP TABLE IF EXISTS "Users";' +
-          'CREATE TABLE "Albums" ("id" INTEGER PRIMARY KEY, "name", "path", "dateCreated", "title", "text");' +
-          'CREATE TABLE "Pictures" ("id" INTEGER PRIMARY KEY, "name", "path", "dateTaken", "album", "title", "text");' +
+          'CREATE TABLE "Albums" ("id" INTEGER PRIMARY KEY, "name", "dateCreated", "title", "text");' +
+          'CREATE TABLE "Pictures" ("id" INTEGER PRIMARY KEY, "name", "dateTaken", "album", "title", "text");' +
           'CREATE TABLE "Comments" ("id" INTEGER PRIMARY KEY, "from", "text", "dateCommented", "album", "picture", "spam", "ip");' +
-          'CREATE TABLE "Users" ("name" PRIMARY KEY, "password");' +
+          'CREATE TABLE "Users" ("id" INTEGER PRIMARY KEY, "name", "password");' +
           'CREATE TABLE "Settings" ("name" PRIMARY KEY, "value");' +
           'CREATE INDEX "albums_name" ON "Albums" ("name");' +
           'CREATE INDEX "pictures_name" ON "Pictures" ("name");' +
@@ -133,13 +137,16 @@ app.configure () ->
       # check akismet
       if verified is true
         util.log 'Verified Akismet key'
-      if verified is false
+      else if verified is false
         util.log 'Could not verify Akismet key.'
+        app.set 'akismet', null
+      else if verified is null
+        util.log 'Akismet key does not exist.'
         app.set 'akismet', null
 
       # start upload monitor
       UploadMonitor = require './libs/monitor'
-      monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.watchInterval)
+      monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.thumbSize, settings.watchInterval)
       monitor.start()
 
       # include controllers
@@ -161,6 +168,7 @@ app.configure () ->
 
       # dynamic view helpers
       app.dynamicHelpers {
+        # returns array of pagination objects
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
           if pages <= 1 then return null
@@ -182,6 +190,19 @@ app.configure () ->
             pagination.push opage
 
           return pagination
+
+        # returns an array of error messages
+        messages: (req, res) ->
+          msg = req.flash 'error'
+          if not msg or msg.length is 0 then msg = null
+          return msg
+
+        # gets the logged in user
+        user: (req, res) ->
+          userid = if req.session.userid then req.session.userid else null
+          user = app.set 'user'
+          if user and user.id is userid then return user else return null
+
       }
 
       # start listening

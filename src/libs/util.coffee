@@ -66,5 +66,32 @@ module.exports = {
     inputHash = @makeHash input, salt
     return hashed is inputHash
 
+
+  # Converts a Date object to sqlite date string formatted as
+  # YYYY-MM-DD HH:MM:SS.
+  #
+  # date: a date object
+  # time: true to include time, defaults to true
+  dateToSQLite: (date, time) ->
+    if not time? then time = true
+
+    y = date.getFullYear()
+    m = date.getMonth() + 1
+    d = date.getDate()
+    hh = date.getHours()
+    mm = date.getMinutes()
+    ss = date.getSeconds()
+
+    if m < 10 then m = '0' + m
+    if d < 10 then d = '0' + d
+    if hh < 10 then hh = '0' + hh
+    if mm < 10 then mm = '0' + mm
+    if ss < 10 then ss = '0' + ss
+
+    if time
+      return y + '-' + m + '-' + d + ' ' + hh + ':' + mm + ':' + ss
+    else
+      return y + '-' + m + '-' + d
+
 }
 

@@ -31,7 +31,6 @@ class Albums
     )
 
 
-
   # Gets all albums starting at the given page
   #
   # page: starting page number, one-based
@@ -78,7 +77,7 @@ class Albums
         if albums.length isnt pics.length then throw 'Unable to read pictures.'
         for i in [0...albums.length]
           albums[i].url = '/albums/' + albums[i].name
-          albums[i].thumbnail = '/thumbs/' + albums[i].name + '/' + albums[i].pictures[0].name
+          albums[i].thumbnail = '/thumbs/' + albums[i].name + '/' + pics[i][0].name
         callback err, albums
     )
 
@@ -100,7 +99,7 @@ class Albums
       # get album
       () ->
         self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE spam=false AND "album"=? AND "picture"=null', [name], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=null', [name], @parallel()
         self.countPictures name, @parallel()
         self.getPictures name, page, count, @parallel()
         return undefined
