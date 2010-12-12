@@ -9,8 +9,43 @@
 
 
 
-%ul.comments
-  :each comment in picture.comments
-    %li
-      = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+.clearfix
+
+.gendiv
+
+  .h1
+    :if picture.title
+      = picture.title
+    :if !picture.title
+      = picture.name
+
+  :if picture.text
+    %p
+      picture.text
+
+  %hr{ size: 1 }/
+
+  :if picture.comments
+    %ul.comments
+      :each comment in picture.comments
+        %li
+          = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+    %hr{ size: 1 }/
+
+  %form{ method: "post", action: "/comments/add" }
+    %input{ type: "hidden", name: "album", value: picture.album.name }/
+    %input{ type: "hidden", name: "picture", value: picture.name }/
+
+    %p
+      %label{ for: "from" }
+        From:
+      %input{ type: "text", name: "from", id: "from" }/
+
+    %p
+      %label{ for: "text" }
+        Comment:
+      %textarea{ name: "text", id: "text" }
+
+    %p
+      %input{ type: "submit", value: "Post Comment" }/
 

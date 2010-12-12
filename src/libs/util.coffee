@@ -70,9 +70,10 @@ module.exports = {
   # Converts a Date object to sqlite date string formatted as
   # YYYY-MM-DD HH:MM:SS.
   #
-  # date: a date object
+  # date: a date object, default to current date/time
   # time: true to include time, defaults to true
   dateToSQLite: (date, time) ->
+    if not date then date = new Date()
     if not time? then time = true
 
     y = date.getFullYear()

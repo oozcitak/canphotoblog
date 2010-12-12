@@ -6,3 +6,42 @@
           %a{ href: picture.url }
             %img{ alt: picture.name, src: picture.thumbnail }/
 
+.clearfix
+
+.gendiv
+
+  .h1
+    :if album.title
+      = album.title
+    :if !album.title
+      = album.name
+
+  :if album.text
+    %p
+      album.text
+
+  %hr{ size: 1 }/
+
+  :if album.comments
+    %ul.comments
+      :each comment in album.comments
+        %li
+          = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+    %hr{ size: 1 }/
+
+  %form{ method: "post", action: "/comments/add" }
+    %input{ type: "hidden", name: "album", value: album.name }/
+
+    %p
+      %label{ for: "from" }
+        From:
+      %input{ type: "text", name: "from", id: "from" }/
+
+    %p
+      %label{ for: "text" }
+        Comment:
+      %textarea{ name: "text", id: "text" }
+
+    %p
+      %input{ type: "submit", value: "Post Comment" }/
+
