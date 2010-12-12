@@ -157,17 +157,23 @@ app.configure () ->
 
       # set view helpers
       app.helpers {
-        appname: settings.appName
-        apptitle: settings.appTitle
         pagetitle: ''
         pageCount: 0
         album: null
         picture: null
-        gaKey: settings.gaKey
       }
 
       # dynamic view helpers
       app.dynamicHelpers {
+
+        # settings
+        appname: (req, res) ->
+          return app.set('settings').appName
+        apptitle: (req, res) ->
+          return app.set('settings').appTitle
+        gakey: (req, res) ->
+          return app.set('settings').gaKey
+
         # returns array of pagination objects
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
@@ -192,8 +198,14 @@ app.configure () ->
           return pagination
 
         # returns an array of error messages
-        messages: (req, res) ->
+        errorMessages: (req, res) ->
           msg = req.flash 'error'
+          if not msg or msg.length is 0 then msg = null
+          return msg
+
+        # returns an array of info messages
+        infoMessages: (req, res) ->
+          msg = req.flash 'info'
           if not msg or msg.length is 0 then msg = null
           return msg
 

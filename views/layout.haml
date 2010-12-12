@@ -36,9 +36,14 @@
                 = picture.name
 
         #container
-          :if messages
+          :if errorMessages
             .gendiv.error
-              :each msg in messages
+              :each msg in errorMessages
+                %p
+                  = msg
+          :if infoMessages
+            .gendiv.info
+              :each msg in infoMessages
                 %p
                   = msg
 
@@ -73,9 +78,9 @@
         %a{ href: "/login" }
           login
 
-    :if gaKey
+    :if gakey
       :javascript
-        var _gaq = [['_setAccount', '#{gaKey}'], ['_trackPageview']];
+        var _gaq = [['_setAccount', '#{gakey}'], ['_trackPageview']];
          (function(d, t) {
           var g = d.createElement(t),
               s = d.getElementsByTagName(t)[0];

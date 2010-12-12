@@ -70,5 +70,31 @@ class Users
     )
 
 
+  # Changes the password of the given user
+  #
+  # id: user id
+  # password: user password
+  # callback: err
+  changePassword: (id, password, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # get user
+      () ->
+        hash = cutil.makeHash password
+        self.db.execute 'UPDATE "Users" SET "password"=? WHERE "id"=? LIMIT 1', [hash, id], @
+        return undefined
+
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+
+    )
+
+
 module.exports = Users
 

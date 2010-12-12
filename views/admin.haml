@@ -1,0 +1,64 @@
+.gendiv
+
+  %h1
+    settings
+
+  %form{ method: "post", action: "/admin" }
+    %p
+      %label{ for: "name" }
+        Application Name:
+      %input{ type: "text", name: "name", id: "name", value: settings.appName }/
+
+    %p
+      %label{ for: "title" }
+        Application Title:
+      %input{ type: "text", name: "title", id: "title", value: settings.appTitle }/
+
+    %p
+      %label{ for: "albums" }
+        Albums Per Page:
+      %input{ type: "text", name: "albums", id: "albums", value: settings.albumsPerPage }/
+
+    %p
+      %label{ for: "pictures" }
+        Pictures Per Page:
+      %input{ type: "text", name: "pictures", id: "pictures", value: settings.picturesPerPage }/
+
+    %p
+      %label{ for: "thumbsize" }
+        Thumbnail Size:
+      %input{ type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize }/
+
+
+    %p
+      %label{ for: "akismetkey" }
+        Akismet Key:
+      %input{ type: "text", name: "akismetkey", id: "akismetkey", value: settings.akismetKey }/
+
+    %p
+      %label{ for: "akismeturl" }
+        Blog URL for Akismet:
+      %input{ type: "text", name: "akismeturl", id: "akismeturl", value: settings.akismetURL }/
+
+    %p
+      %label{ for: "gakey" }
+        Google Analytics Key:
+      %input{ type: "text", name: "gakey", id: "gakey", value: settings.gaKey }/
+
+    %p
+      %input{ type: "submit", value: "Save Settings" }/
+
+.gendiv
+
+  %h1
+    password
+
+  %form{ method: "post", action: "/admin/password" }
+    %p
+      %label{ for: "password" }
+        Admin Password:
+      %input{ type: "password", name: "password", id: "password" }/
+
+    %p
+      %input{ type: "submit", value: "Change Password" }/
+

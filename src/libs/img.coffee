@@ -101,12 +101,6 @@ module.exports = {
             '-strip',
             '-thumbnail',
             width + 'x' + width,
-            '-background',
-            'white',
-            '-gravity',
-            'center',
-            '-extent',
-            width + 'x' + width,
             '-path',
             destDir
             path.join sourceDir, '*.jpg'
