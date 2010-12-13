@@ -8,6 +8,7 @@ settings = app.set 'settings'
 Albums = require '../models/albums'
 albums = new Albums db
 
+
 # GET /albums/album
 app.get '/albums/:album', (req, res) ->
 
@@ -36,4 +37,31 @@ app.get '/albums/:album', (req, res) ->
         }
 
   )
+
+
+# POST /albums/edit
+app.post '/albums/edit', (req, res) ->
+
+  if req.session.userid
+    album = req.body.album
+    title = req.body.title
+    text = req.body.text
+
+    step(
+
+      # edit album
+      () ->
+        albums.editAlbum album, title, text, @
+        return undefined
+
+      # go back
+      (err, item) ->
+        if err then throw err
+        res.redirect '/albums/' + album
+
+    )
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
 

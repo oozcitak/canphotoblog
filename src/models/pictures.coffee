@@ -56,5 +56,31 @@ class Pictures
     )
 
 
+  # Edits picture details
+  #
+  # album: album name
+  # pic: picture name
+  # title: picture title
+  # text: picture text
+  # callback: err
+  editPicture: (album, pic, title, text, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # edit picture
+      () ->
+        self.db.execute 'UPDATE "Pictures" SET "title"=?, "text"=? WHERE "album"=? AND "name"=?', [title, text, album, pic], @
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
 module.exports = Pictures
 

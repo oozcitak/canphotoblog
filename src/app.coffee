@@ -149,6 +149,11 @@ app.configure () ->
       monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.thumbSize, settings.watchInterval)
       monitor.start()
 
+      # default controller
+      app.get '*', (req, res, next) ->
+        app.helpers { pageCount: 0 }
+        next()
+
       # include controllers
       for file in fs.readdirSync path.join(__dirname, 'controllers')
         filename = path.join __dirname, 'controllers', file

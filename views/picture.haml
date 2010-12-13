@@ -13,7 +13,7 @@
 
 .gendiv
 
-  .h1
+  %h1
     :if picture.title
       = picture.title
     :if !picture.title
@@ -21,12 +21,32 @@
 
   :if picture.text
     %p
-      picture.text
+      = picture.text
 
   %hr{ size: 1 }/
 
+  :if user
+    %form{ method: "post", action: "/pictures/edit" }
+      %input{ type: "hidden", name: "album", value: picture.album.name }/
+      %input{ type: "hidden", name: "picture", value: picture.name }/
+
+      %p
+        %label{ for: "title" }
+          Picture Title:
+        %input{ type: "text", name: "title", id: "title" }/
+
+      %p
+        %label{ for: "text" }
+          Picture Text:
+        %textarea{ name: "text", id: "text" }
+
+      %p
+        %input{ type: "submit", value: "Save" }/
+
+    %hr{ size: 1 }/
+
   :if picture.comments.length
-    %ul.comments
+    %ul.cmmments
       :each comment in picture.comments
         %li
           = comment.from + ' (' + comment.dateCommented + '): ' + comment.text

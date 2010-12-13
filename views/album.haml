@@ -10,7 +10,7 @@
 
 .gendiv
 
-  .h1
+  %h1
     :if album.title
       = album.title
     :if !album.title
@@ -18,9 +18,28 @@
 
   :if album.text
     %p
-      album.text
+      = album.text
 
   %hr{ size: 1 }/
+
+  :if user
+    %form{ method: "post", action: "/albums/edit" }
+      %input{ type: "hidden", name: "album", value: album.name }/
+
+      %p
+        %label{ for: "title" }
+          Album Title:
+        %input{ type: "text", name: "title", id: "title" }/
+
+      %p
+        %label{ for: "text" }
+          Album Text:
+        %textarea{ name: "text", id: "text" }
+
+      %p
+        %input{ type: "submit", value: "Save" }/
+
+    %hr{ size: 1 }/
 
   :if album.comments.length
     %ul.comments

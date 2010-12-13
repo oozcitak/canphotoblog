@@ -162,5 +162,30 @@ class Albums
     )
 
 
+  # Edits album details
+  #
+  # album: album name
+  # title: picture title
+  # text: picture text
+  # callback: err
+  editAlbum: (album, title, text, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # edit album
+      () ->
+        self.db.execute 'UPDATE "Albums" SET "title"=?, "text"=? WHERE "name"=?', [title, text, album], @
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
 module.exports = Albums
 

@@ -97,3 +97,31 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
  
   )
 
+
+# POST /pictures/edit
+app.post '/pictures/edit', (req, res) ->
+
+  if req.session.userid
+    album = req.body.album
+    picture = req.body.picture
+    title = req.body.title
+    text = req.body.text
+
+    step(
+
+      # edit picture
+      () ->
+        pictures.editPicture album, picture, title, text, @
+        return undefined
+
+      # go back
+      (err, item) ->
+        if err then throw err
+        res.redirect '/pictures/' + album + '/' + picture
+
+    )
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
