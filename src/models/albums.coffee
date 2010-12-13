@@ -122,7 +122,7 @@ class Albums
         album.pictures = pics
         album.url = '/albums/' + album.name
         album.thumbnail = self.thumbURL album.name, album.pictures[0].name
-        console.log require('sys').inspect album
+
         callback err, album
     )
 

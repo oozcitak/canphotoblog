@@ -3,6 +3,7 @@ path = require 'path'
 util = require 'util'
 step = require 'step'
 im = require '../libs/img'
+cutil = require '../libs/util'
 
 app = module.parent.exports
 db = app.set 'db'
@@ -60,22 +61,32 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
       im.makeThumbnail source, dest, settings.thumbSize, @
       return undefined
 
-    # read image
+    # check if image exists
     (err) ->
       if err then throw err
+      cutil.fileExists dest, @
+      return undefined
+
+    # read image
+    (err, exists) ->
+      if err then throw err
+      if not exists then return null
       fs.readFile dest, @
       return undefined
 
     # output image
     (err, data) ->
       if err then throw err
-      headers = {
-        'Content-Type': 'image/jpeg'
-        'Content-Length': data.length
-      }
-      res.writeHead 200, headers
-      res.write data, 'binary'
-      res.end()
-
+      if data
+        headers = {
+          'Content-Type': 'image/jpeg'
+          'Content-Length': data.length
+        }
+        res.writeHead 200, headers
+        res.write data, 'binary'
+        res.end()
+      else
+        res.render '404'
+ 
   )
 

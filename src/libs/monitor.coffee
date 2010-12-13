@@ -51,8 +51,14 @@ class UploadMonitor
 
     step(
 
-      # get albums
+      # move pictures in root folder
       () ->
+        self.moveRootPictures @
+        return undefined
+
+      # get albums
+      (err) ->
+        if err then throw err
         self.readUploads @
         return undefined
 
@@ -60,6 +66,7 @@ class UploadMonitor
       (err, newalbums) ->
         if err then throw err
         albums = newalbums
+        if albums.length is 0 then return null
 
         albumSQL = 'INSERT INTO "Albums" ("name", "dateCreated") VALUES (?, ?)'
         pictureSQL = 'INSERT INTO "Pictures" ("name", "dateTaken", "album") VALUES (?, ?, ?)'
@@ -73,15 +80,44 @@ class UploadMonitor
 
         return undefined
 
+      # check directories
+      (err) ->
+        if err then throw err
+        if albums.length is 0 then return []
+        group = @group()
+        for album in albums
+          cutil.fileExists path.join(self.albumDir, album.name), group()
+        return undefined
+
+      # make directories
+      (err, exists) ->
+        if err then throw err
+        if exists.length is 0 then return null
+        group = @group()
+        for i in [0...albums.length]
+          if not exists[i]
+            fs.mkdir path.join(self.albumDir, albums[i].name), 0755, group()
+        return undefined
+ 
       # move albums
       (err) ->
         if err then throw err
-        
+        if albums.length is 0 then return null
         group = @group()
         for album in albums
-          fs.rename path.join(self.uploadDir, album.name), path.join(self.albumDir, album.name), group()
+          for picture in album.pictures
+            fs.rename path.join(self.uploadDir, album.name, picture.name), path.join(self.albumDir, album.name, picture.name), group()
         return undefined
-        
+       
+      # delete upload folders
+      (err) ->
+        if err then throw err
+        if albums.length is 0 then return null
+        group = @group()
+        for album in albums
+          fs.rmdir path.join(self.uploadDir, album.name), @
+        return undefined
+
       # done
       (err) ->
         if err then throw err
@@ -121,7 +157,80 @@ class UploadMonitor
       # return albums
       (err, albums) ->
         if err then throw err
-        callback err, albums
+        newalbums = []
+        for album in albums
+          if album.pictures.length isnt 0 then newalbums.push album
+        callback err, newalbums
+
+    )
+
+
+  # Moves pictures in root upload folder into their own album folders
+  #
+  # callback: err
+  moveRootPictures: (callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+    root = @uploadDir
+    pictures = []
+
+    step(
+
+      # read files
+      () ->
+        fs.readdir root, @
+        return undefined
+
+      # read date taken
+      (err, fileNames) ->
+        if err then throw err
+        group = @group()
+        for fileName in fileNames
+          file = path.join root, fileName
+          if fs.statSync(file).isFile()
+            pictures.push { name: fileName, source: file }
+            im.getDate file, group()
+        if pictures.length is 0 then return []
+        return undefined
+
+      # check directories
+      (err, dates) ->
+        if err then throw err
+        if dates? and dates.length is 0 then return []
+        if not dates or dates.length isnt pictures.length then throw 'Error reading root picture dates from file system.'
+        group = @group()
+        for i in [0...dates.length]
+          dir = path.join root, cutil.dateToSQLite(dates[i], false)
+          pictures[i].destDir = dir
+          pictures[i].dest = path.join dir, pictures[i].name
+          cutil.fileExists dir, group()
+        return undefined
+
+      # make directories
+      (err, exists) ->
+        if err then throw err
+        if exists? and exists.length is 0 then return []
+        group = @group()
+        for i in [0...pictures.length]
+          if not exists[i]
+            fs.mkdir pictures[i].destDir, 0755, group()
+        return undefined
+      
+      # move pictures
+      (err) ->
+        if err then throw err
+        if pictures.length is 0 then return null
+        group = @group()
+        for picture in pictures
+          fs.rename picture.source, picture.dest, group()
+        return undefined
+
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+
     )
 
 
@@ -162,6 +271,8 @@ class UploadMonitor
           dateCreated: new Date()
         }
 
+        if album.pictures.length is 0 then return null
+
         # create thumbnails
         im.makeAllThumbnails root, path.join(self.thumbDir, album.name), self.thumbSize, @
         return undefined
@@ -169,6 +280,7 @@ class UploadMonitor
       # read date taken
       (err) ->
         if err then throw err
+        if album.pictures.length is 0 then return []
         group = @group()
         for pic in album.pictures
           im.getDate path.join(root, pic.name), group()

@@ -20,52 +20,60 @@ module.exports = {
     self = @
     sourceDir = path.dirname source
     destDir = path.dirname dest
+    nosource = false
 
     step(
 
-      # check if directory exists
+      # check if source image and destination directory exists
       () ->
-        cutil.fileExists destDir, @
+        cutil.fileExists source, @parallel()
+        cutil.fileExists destDir, @parallel()
         return undefined
 
       # create if not
-      (err, exists) ->
+      (err, sourceexists, destexists) ->
         if err then throw err
-        if not exists
+
+        if not sourceexists
+          nosource = true
+          return null
+
+        if destexists
+          return null
+        else
           fs.mkdir destDir, 0755, @
           return undefined
-        else
-          return null
 
       # check if thumbnail already exists
       (err) ->
         if err then throw err
+        if nosource then return null
         cutil.fileExists dest, @
         return undefined
 
       # build thumbnail if not
       (err, exists) ->
         if err then throw err
-        if exists
-          return null
-        else
-         args = [
-            source
-            '-strip',
-            '-thumbnail',
-            width + 'x' + width,
-            '-background'
-            'none'
-            '-gravity'
-            'center'
-            '-extent'
-            width + 'x' + width
-            '-format'
-            'png'
-            dest
-          ]
-          im.convert args, @
-          return undefined
+        if nosource then return null
+        if exists then  return null
+
+        args = [
+          source
+          '-strip',
+          '-thumbnail',
+          width + 'x' + width,
+          '-background'
+          'none'
+          '-gravity'
+          'center'
+          '-extent'
+          width + 'x' + width
+          '-format'
+          'png'
+          dest
+        ]
+        im.convert args, @
+        return undefined
 
       # execute callback
       (err) ->
