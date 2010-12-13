@@ -25,11 +25,12 @@ app.get '/', (req, res) ->
     # render page
     (err, rows, count) ->
       if err then throw err
+
+      app.helpers { pageCount: Math.ceil(count / settings.albumsPerPage) }
+
       res.render 'index', {
           locals: {
-            page: page
             albums: rows
-            pageCount: Math.ceil(count / settings.albumsPerPage)
           }
         }
 

@@ -178,21 +178,22 @@ app.configure () ->
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
           if pages <= 1 then return null
-          console.log pages
 
-          page = 1
           parts = url.parse req.url, true
-          if not parts.query? then parts.query = { page: '1' }
-          if not parts.query.page? then parts.query.page = '1'
-          page = parts.query.page
+          pathname = parts.pathname
+          query = parts.query or { page: '1' }
+          if not query.page? then query.page = '1'
+          page = parseInt(query.page)
 
           pagination = []
           for i in [1...(1 + pages)]
             opage = {}
             opage.text = String(i)
-            opage.selected = if String(i) is page then true else false
+            opage.selected = if i is page then true else false
             opage.islink = !opage.selected
-            parts.query.page = String(i)
+
+            query.page = String(i)
+            parts = { pathname: pathname, query: query }
             opage.url = url.format parts
             pagination.push opage
 

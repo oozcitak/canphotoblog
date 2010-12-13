@@ -52,7 +52,7 @@ class Albums
 
       # read albums
       () ->
-        self.db.execute 'SELECT *,"Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count" FROM "Albums" 
+        self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count" FROM "Albums" 
             INNER JOIN "Pictures" ON "Albums"."name" = "Pictures"."album" GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @
         return undefined

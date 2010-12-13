@@ -118,7 +118,7 @@ class UploadMonitor
         if albums.length is 0 then return null
         group = @group()
         for album in albums
-          fs.rmdir path.join(self.uploadDir, album.name), @
+          fs.rmdir path.join(self.uploadDir, album.name), group()
         return undefined
 
       # done
@@ -202,7 +202,7 @@ class UploadMonitor
       # check directories
       (err, dates) ->
         if err then throw err
-        if dates? and dates.length is 0 then return []
+        if pictures.length is 0 then return []
         if not dates or dates.length isnt pictures.length then throw new Error('Error reading root picture dates from file system.')
         group = @group()
         for i in [0...dates.length]
@@ -215,12 +215,15 @@ class UploadMonitor
       # make directories
       (err, exists) ->
         if err then throw err
-        if exists? and exists.length is 0 then return []
+        if pictures.length is 0 then null
+        if not exists or exists.length isnt pictures.length then throw new Error('Error reading root picture dir states from file system.')
         group = @group()
+        madedirs = false
         for i in [0...pictures.length]
           if not exists[i]
+            madedirs = true
             fs.mkdir pictures[i].destDir, 0755, group()
-        return undefined
+        if not madedirs then return null else return undefined
       
       # move pictures
       (err) ->

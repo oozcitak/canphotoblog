@@ -18,21 +18,20 @@ app.get '/albums/:album', (req, res) ->
 
     # get album
     () ->
-      albums.getAlbum album, page, settings.picturesPerPage, @parallel()
-      albums.countPictures album, @parallel()
+      albums.getAlbum album, page, settings.picturesPerPage, @
       return undefined
 
     # render page
-    (err, item, count) ->
+    (err, item) ->
       if err then throw err
       if not item then throw new Error('Album not found: ' + album)
 
+      app.helpers { pageCount: Math.ceil(item.count / settings.albumsPerPage) }
+
       res.render 'album', {
           locals: {
-            page: page
             album: item
             pagetitle: item.name
-            pageCount: Math.ceil(count / settings.picturesPerPage)
           }
         }
 

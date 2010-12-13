@@ -11,6 +11,7 @@ comments = new Comments db
 
 # POST /comments/add
 app.post '/comments/add', (req, res) ->
+
   album = req.body.album
   picture = req.body.picture or null
   name = req.body.from

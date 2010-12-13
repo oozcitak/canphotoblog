@@ -16,7 +16,6 @@ pictures = new Pictures db
 # GET /pictures/album/picture.ext
 app.get '/pictures/:album/:picture.:ext', (req, res) ->
 
-  page = req.query.page || 1
   album = req.params.album
   picture = req.params.picture + '.' + req.params.ext
 
@@ -31,6 +30,7 @@ app.get '/pictures/:album/:picture.:ext', (req, res) ->
     (err, picinfo) ->
       if err then throw err
       if not picinfo then throw new Error('Picture not found: ' + album + '/' + picture)
+
       res.render 'picture', {
           locals: {
             pagetitle: picinfo.name
@@ -47,7 +47,6 @@ app.get '/pictures/:album/:picture.:ext', (req, res) ->
 # generated here.
 app.get '/thumbs/:album/:picture.:ext', (req, res) ->
 
-  page = req.query.page || 1
   album = req.params.album
   picture = req.params.picture
   ext = req.params.ext
@@ -56,8 +55,16 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
 
   step(
 
-    # get thumbnail
+    # check source
     () ->
+      cutil.fileExists source, @
+      return undefined
+
+    # get thumbnail
+    (err, exists) ->
+      if err then throw err
+      if not exists then throw new Error('Picture not found:' + album + '/' + picture + '.' + ext)
+
       im.makeThumbnail source, dest, settings.thumbSize, @
       return undefined
 
