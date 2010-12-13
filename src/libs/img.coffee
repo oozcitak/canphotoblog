@@ -128,7 +128,7 @@ module.exports = {
             'png'
             '-path',
             destDir
-            path.join sourceDir, '*.jpg'
+            sourceDir + '/*'
           ]
         im.mogrify args, @
         return undefined

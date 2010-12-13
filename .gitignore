@@ -1,4 +1,5 @@
 lib/
 logs/
+uploads/
 originals/
 album.sqlite

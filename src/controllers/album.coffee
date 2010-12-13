@@ -25,7 +25,7 @@ app.get '/albums/:album', (req, res) ->
     # render page
     (err, item, count) ->
       if err then throw err
-      if not item then throw 'Album not found: ' + album
+      if not item then throw new Error('Album not found: ' + album)
 
       res.render 'album', {
           locals: {

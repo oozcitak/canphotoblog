@@ -25,7 +25,7 @@
 
   %hr{ size: 1 }/
 
-  :if picture.comments
+  :if picture.comments.length
     %ul.comments
       :each comment in picture.comments
         %li

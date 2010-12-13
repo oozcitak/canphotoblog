@@ -30,7 +30,7 @@ app.get '/pictures/:album/:picture.:ext', (req, res) ->
     # render page
     (err, picinfo) ->
       if err then throw err
-      if not picinfo then throw 'Picture not found: ' + album + '/' + picture
+      if not picinfo then throw new Error('Picture not found: ' + album + '/' + picture)
       res.render 'picture', {
           locals: {
             pagetitle: picinfo.name

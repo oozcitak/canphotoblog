@@ -97,7 +97,7 @@ app.configure () ->
     # add to app settings
     (err, rows) ->
       if err then throw err
-      if not rows then throw 'Unable to read application settings.'
+      if not rows then throw new Error('Unable to read application settings.')
 
       settings = cutil.joinObjects settings, rows
       app.set 'settings', settings
@@ -178,6 +178,7 @@ app.configure () ->
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
           if pages <= 1 then return null
+          console.log pages
 
           page = 1
           parts = url.parse req.url, true

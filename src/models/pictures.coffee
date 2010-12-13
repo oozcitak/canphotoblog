@@ -35,7 +35,7 @@ class Pictures
       # read picture
       (err, picturerows, albumrows, comments) ->
         if err then throw err
-        if not picturerows or picturerows.length is 0 then throw 'Error reading picture ' + album + '/' + pic + ' from database.'
+        if not picturerows or picturerows.length is 0 then throw new Error('Error reading picture ' + album + '/' + pic + ' from database.')
 
         picture = {}
         for i in [0...picturerows.length]

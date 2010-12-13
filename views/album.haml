@@ -22,7 +22,7 @@
 
   %hr{ size: 1 }/
 
-  :if album.comments
+  :if album.comments.length
     %ul.comments
       :each comment in album.comments
         %li

@@ -74,7 +74,7 @@ module.exports = {
   # time: true to include time, defaults to true
   dateToSQLite: (date, time) ->
     if not date then date = new Date()
-    if not time? then time = true
+    if time isnt false then time = true
 
     y = date.getFullYear()
     m = date.getMonth() + 1

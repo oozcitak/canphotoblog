@@ -52,38 +52,17 @@ class Albums
 
       # read albums
       () ->
-        self.db.execute 'SELECT * FROM "Albums" ORDER BY "name" DESC LIMIT ' +
-          (page - 1) * count + ',' + count, @
+        self.db.execute 'SELECT *,"Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count" FROM "Albums" 
+            INNER JOIN "Pictures" ON "Albums"."name" = "Pictures"."album" GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
+            (page - 1) * count + ',' + count, @
         return undefined
 
-      # read picture count
-      (err, rows) ->
-        if err then throw err
-        albums = rows
-        if albums.length is 0 then return []
-        group = @group()
-        for album in albums
-          self.countPictures album.name, group()
-        return undefined
- 
-      # read pictures
-      (err, counts) ->
-        if err then throw err
-        if albums.length isnt counts.length then throw 'Unable to read picture counts.'
-        if albums.length is 0 then return []
-        group = @group()
-        for i in [0...albums.length]
-          albums[i].count = counts[i]
-          self.getPictures albums[i].name, 1, 1, group()
-        return undefined
-      
       # execute callback
-      (err, pics) ->
+      (err, albums) ->
         if err then throw err
-        if albums.length isnt pics.length then throw 'Unable to read pictures.'
         for i in [0...albums.length]
           albums[i].url = '/albums/' + albums[i].name
-          albums[i].thumbnail = self.thumbURL albums[i].name, pics[i][0].name
+          albums[i].thumbnail = self.thumbURL albums[i].name, albums[i].thumbnail
         callback err, albums
     )
 
@@ -113,8 +92,8 @@ class Albums
       # read album
       (err, rows, comments, count, pics) ->
         if err then throw err
-        if not rows or rows.length is 0 then throw 'Error reading album ' + name + ' from database.'
-        if not pics then throw 'Unable to read pictures for album ' + name + '.'
+        if not rows or rows.length is 0 then throw new Error('Error reading album ' + name + ' from database.')
+        if not pics then throw new Error('Unable to read pictures for album ' + name + '.')
 
         album = rows[0]
         album.comments = comments

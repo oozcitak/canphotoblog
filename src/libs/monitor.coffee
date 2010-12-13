@@ -14,7 +14,7 @@ class UploadMonitor
   #
   # db: database connection object
   # albumDir: path to album directory
-  # thumbDir: path to thumbnail directory
+  # thumbDir: paoh to ohumbnail directory
   # uploadDir: path to uploads directory
   # thumbSize: size of generated thumbnails
   # watchInterval: time in milliseconds between new album checks
@@ -25,6 +25,7 @@ class UploadMonitor
     @uploadDir =  uploadDir
     @thumbSize = thumbSize
     @watchInterval = watchInterval
+    @workPerStep = 10
 
 
   # Starts watching the uploads folder
@@ -68,15 +69,17 @@ class UploadMonitor
         albums = newalbums
         if albums.length is 0 then return null
 
-        albumSQL = 'INSERT INTO "Albums" ("name", "dateCreated") VALUES (?, ?)'
-        pictureSQL = 'INSERT INTO "Pictures" ("name", "dateTaken", "album") VALUES (?, ?, ?)'
+        albumSQL = 'INSERT INTO "Albums" ("name", "dateCreated") 
+            SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM "Albums" WHERE "name"=?)'
+        pictureSQL = 'INSERT INTO "Pictures" ("name", "dateTaken", "album") 
+            SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM "Pictures" WHERE "name"=? AND "album"=?)'
 
         group = @group()
         for album in albums
-          self.db.execute albumSQL, [album.name, cutil.dateToSQLite(album.dateCreated)], group()
+          self.db.execute albumSQL, [album.name, cutil.dateToSQLite(album.dateCreated), album.name], group()
 
           for picture in album.pictures
-            self.db.execute pictureSQL, [picture.name, cutil.dateToSQLite(picture.dateTaken), album.name], group()
+            self.db.execute pictureSQL, [picture.name, cutil.dateToSQLite(picture.dateTaken), album.name, picture.name, album.name], group()
 
         return undefined
 
@@ -99,7 +102,7 @@ class UploadMonitor
             fs.mkdir path.join(self.albumDir, albums[i].name), 0755, group()
         return undefined
  
-      # move albums
+      # move pictures
       (err) ->
         if err then throw err
         if albums.length is 0 then return null
@@ -147,6 +150,7 @@ class UploadMonitor
       (err, dirNames) ->
         if err then throw err
         if dirNames? and dirNames.length is 0 then return []
+        dirNames = dirNames.slice(0, self.workPerStep)
         group = @group()
         for dirName in dirNames
           dir = path.join root, dirName
@@ -185,6 +189,7 @@ class UploadMonitor
       # read date taken
       (err, fileNames) ->
         if err then throw err
+        fileNames = fileNames.slice(0, self.workPerStep)
         group = @group()
         for fileName in fileNames
           file = path.join root, fileName
@@ -198,7 +203,7 @@ class UploadMonitor
       (err, dates) ->
         if err then throw err
         if dates? and dates.length is 0 then return []
-        if not dates or dates.length isnt pictures.length then throw 'Error reading root picture dates from file system.'
+        if not dates or dates.length isnt pictures.length then throw new Error('Error reading root picture dates from file system.')
         group = @group()
         for i in [0...dates.length]
           dir = path.join root, cutil.dateToSQLite(dates[i], false)
@@ -289,7 +294,7 @@ class UploadMonitor
       # save date taken
       (err, dates) ->
         if err then throw err
-        if not dates or dates.length isnt album.pictures.length then throw 'Error reading album ' + album.name + ' from file system.'
+        if not dates or dates.length isnt album.pictures.length then throw new Error('Error reading album ' + album.name + ' from file system.')
 
         for i in [0...dates.length]
           album.pictures[i].dateTaken = dates[i]

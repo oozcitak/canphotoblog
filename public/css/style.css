@@ -185,6 +185,7 @@ ul.gallery { list-style: none; }
 .album { height: 180px; }
 .thumb-info, .thumb-name { overflow: hidden; text-overflow: ellipsis; }
 .thumb-info { font-size: 85%; color: # 444; }
+ul.gallery li { display: inline; }
 
 /* Single pictures */
 .pic img { background-color: #fff; padding: 12px;
