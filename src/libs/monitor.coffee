@@ -193,7 +193,7 @@ class UploadMonitor
         group = @group()
         for fileName in fileNames
           file = path.join root, fileName
-          if fs.statSync(file).isFile()
+          if fs.statSync(file).isFile() and path.extname(file).toLowerCase() is '.jpg'
             pictures.push { name: fileName, source: file }
             im.getDate file, group()
         if pictures.length is 0 then return []
@@ -267,7 +267,7 @@ class UploadMonitor
         pics = []
         for fileName in fileNames
           file = path.join root, fileName
-          if fs.statSync(file).isFile()
+          if fs.statSync(file).isFile() and path.extname(file).toLowerCase() is '.jpg'
             pic = {
               name: fileName
             }
