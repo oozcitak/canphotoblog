@@ -51,6 +51,7 @@ class Pictures
         picture.url = '/albums/' + album + '/' + picture.name
         picture.thumbnail = '/thumbs/' + album + '/' + picture.name
         picture.comments = comments
+        picture.displayName = picture.title or picture.name
  
         callback err, picture
     )

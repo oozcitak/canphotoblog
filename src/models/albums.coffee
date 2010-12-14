@@ -52,17 +52,29 @@ class Albums
 
       # read albums
       () ->
-        self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count" FROM "Albums" 
-            INNER JOIN "Pictures" ON "Albums"."name" = "Pictures"."album" GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
-            (page - 1) * count + ',' + count, @
+        self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count"
+            FROM "Albums" LEFT JOIN "Pictures" ON "Albums"."name" = "Pictures"."album"
+            GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
+            (page - 1) * count + ',' + count, @parallel()
+        self.db.execute 'SELECT "album", COUNT("album") AS "count" FROM "Comments"
+            WHERE "spam"=0 GROUP BY "album"', @parallel()
+            
         return undefined
 
       # execute callback
-      (err, albums) ->
+      (err, albums, comments) ->
         if err then throw err
+
+        counts = {}
+        for comment in comments
+          counts[comment.album] = comment.count
+
         for i in [0...albums.length]
           albums[i].url = '/albums/' + albums[i].name
           albums[i].thumbnail = self.thumbURL albums[i].name, albums[i].thumbnail
+          albums[i].comments = counts[albums[i].name] or 0
+          albums[i].displayName = albums[i].title or albums[i].name
+
         callback err, albums
     )
 
@@ -101,6 +113,7 @@ class Albums
         album.pictures = pics
         album.url = '/albums/' + album.name
         album.thumbnail = self.thumbURL album.name, album.pictures[0].name
+        album.displayName = album.title or album.name
 
         callback err, album
     )
@@ -139,24 +152,30 @@ class Albums
 
     callback = cutil.ensureCallback callback
     self = @
-    pictures = []
 
     step(
 
       # get pictures
       () ->
-        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" DESC LIMIT ' +
-          (page - 1) * count + ',' + count, [name], @
+        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" 
+            ASC LIMIT ' + (page - 1) * count + ',' + count, [name], @parallel()
+        self.db.execute 'SELECT "picture", COUNT("picture") AS "count" FROM "Comments" WHERE "album"=? 
+            AND "spam"=0 AND NOT "picture" IS NULL GROUP BY "picture"', [name], @parallel()
         return undefined
-      
+
       # read pictures
-      (err, rows) ->
+      (err, pictures, comments) ->
         if err then throw err
-        pictures = []
-        for picture in rows
-          picture.url = '/pictures/' + name + '/' + picture.name
-          picture.thumbnail = self.thumbURL name, picture.name
-          pictures.push picture
+
+        counts = {}
+        for comment in comments
+          counts[comment.picture] = comment.count
+
+        for i in [0...pictures.length]
+          pictures[i].url = '/pictures/' + name + '/' + pictures[i].name
+          pictures[i].thumbnail = self.thumbURL name, pictures[i].name
+          pictures[i].comments = counts[pictures[i].name] or 0
+          pictures[i].displayName = pictures[i].title or pictures[i].name
 
         callback err, pictures
     )

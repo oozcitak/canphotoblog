@@ -175,6 +175,7 @@ h1 { margin: 0.5em 0 }
 
 /* Comments */
 ul.comments { list-style: none; text-align: left; }
+ul.gallery li .commented { background-color: #FCFBE3; }
 .
 /* Albums */
 ul.gallery { list-style: none; }
@@ -183,12 +184,12 @@ ul.gallery { list-style: none; }
   box-shadow: 2px 2px 15px #333; -mox-box-shadow: 2px 2px 15px #333;
   -webkit-box-shadow: 2px 2px 15px #333; text-align: center; }
 .album { height: 180px; }
-.thumb-info, .thumb-name { overflow: hidden; text-overflow: ellipsis; }
+.thumb-info, .thumb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thumb-info { font-size: 85%; color: # 444; }
 ul.gallery li { display: inline; }
 
 /* Single pictures */
-.pic img { background-color: #fff; padding: 12px;
+.pic img { background-color: #eee; padding: 12px;
   box-shadow: 2px 2px 15px #333; -mox-box-shadow: 2px 2px 15px #333;
   -webkit-box-shadow: 2px 2px 15px #333; }
 

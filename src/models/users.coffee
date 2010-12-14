@@ -85,7 +85,7 @@ class Users
       # get user
       () ->
         hash = cutil.makeHash password
-        self.db.execute 'UPDATE "Users" SET "password"=? WHERE "id"=? LIMIT 1', [hash, id], @
+        self.db.execute 'UPDATE "Users" SET "password"=? WHERE "id"=?', [hash, id], @
         return undefined
 
       # execute callback

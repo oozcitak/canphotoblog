@@ -2,10 +2,10 @@
 
   :if picture.next
     %a{ href: picture.next }
-      %img{ alt: picture.name, src: picture.url }/
+      %img{ alt: picture.displayName, src: picture.url, title: picture.displayName }/
 
   :if !picture.next
-    %img{ alt: picture.name, src: picture.url }/
+    %img{ alt: picture.displayName, src: picture.url, title: picture.displayName }/
 
 
 
@@ -14,10 +14,8 @@
 .gendiv
 
   %h1
-    :if picture.title
-      = picture.title
-    :if !picture.title
-      = picture.name
+    = picture.displayName 
+    = ' (' + picture.dateTaken + ')'
 
   :if picture.text
     %p
@@ -46,10 +44,10 @@
     %hr{ size: 1 }/
 
   :if picture.comments.length
-    %ul.cmmments
+    %ul.comments
       :each comment in picture.comments
         %li
-          = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
     %hr{ size: 1 }/
 
   %form{ method: "post", action: "/comments/add" }

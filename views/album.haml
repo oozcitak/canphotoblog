@@ -1,20 +1,27 @@
 %ul.gallery
   :each picture in album.pictures
     %li
-      .thumb
-        .thumb-pic
-          %a{ href: picture.url }
-            %img{ alt: picture.name, src: picture.thumbnail }/
+      :if picture.comments
+        .thumb.album.commented
+          .thumb-pic
+            %a{ href: picture.url }
+              %img{ alt: picture.displayName, src: picture.thumbnail, title: picture.displayName }/
+          .thumb-name
+            = picture.displayName
+      :if !picture.comments
+        .thumb.album
+          .thumb-pic
+            %a{ href: picture.url }
+              %img{ alt: picture.displayName, src: picture.thumbnail, title: picture.displayName }/
+          .thumb-name
+            = picture.displayName
 
 .clearfix
 
 .gendiv
 
   %h1
-    :if album.title
-      = album.title
-    :if !album.title
-      = album.name
+    = album.displayName
 
   :if album.text
     %p
@@ -45,7 +52,7 @@
     %ul.comments
       :each comment in album.comments
         %li
-          = comment.from + ' (' + comment.dateCommented + '): ' + comment.text
+          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
     %hr{ size: 1 }/
 
   %form{ method: "post", action: "/comments/add" }
