@@ -153,14 +153,14 @@ body { background: #1A1A1A url(../img/wood.jpg); }
 #container { width: 750px; margin: 40px auto; text-align: center; }
 #header { background: #fff; color: #444; text-align: center;
   opacity: 0.4; border-bottom: solid 5px #9eaaaf; font-size: 125%;
-  height: 45px; line-height: 45px; }
+  height: 60px; line-height: 60px; }
 #header ul { list-style: none; display:inline; background: #000; color: #aaa;
   box-shadow: 2px 2px 15px #333; -moz-box-shadow: 2px 2px 15px #333; -webkit-box-shadow: 2px 2px 15px #333;
   border-radius: 4px; padding: 4px 8px; margin: 0px 4px; }
 #header ul li { display: inline; }
 #header ul li:before { content: "\0020 \00BB \0020"; }
-#header ul li.first:before { content: " "; }
-#header ul li a { color: #aaa; }
+#header ul li.first:before { content: ""; }
+#header ul li a { color: #aaa; text-decoration: none; }
 #header ul li a:hover { color: #fff; }
 #footer { background: #fff; color: #444; text-align: center; font-size: 85%;
   opacity: 0.4; border-top: solid 5px #9eaaaf; }
