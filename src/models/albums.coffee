@@ -32,11 +32,6 @@ class Albums
     )
 
 
-  # Gets the thumbnail URL for the given picture
-  thumbURL: (album, pic) ->
-    return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'
-    
-
   # Gets all albums starting at the given page
   #
   # page: starting page number, one-based
@@ -55,6 +50,71 @@ class Albums
         self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count"
             FROM "Albums" LEFT JOIN "Pictures" ON "Albums"."name" = "Pictures"."album"
             GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
+            (page - 1) * count + ',' + count, @parallel()
+        self.db.execute 'SELECT "album", COUNT("album") AS "count" FROM "Comments"
+            WHERE "spam"=0 GROUP BY "album"', @parallel()
+            
+        return undefined
+
+      # execute callback
+      (err, albums, comments) ->
+        if err then throw err
+
+        counts = {}
+        for comment in comments
+          counts[comment.album] = comment.count
+
+        for i in [0...albums.length]
+          albums[i].url = '/albums/' + albums[i].name
+          albums[i].thumbnail = self.thumbURL albums[i].name, albums[i].thumbnail
+          albums[i].comments = counts[albums[i].name] or 0
+          albums[i].displayName = albums[i].title or albums[i].name
+
+        callback err, albums
+    )
+
+
+  # Gets the album count for albums with comments
+  #
+  # callback err, count
+  countCommentedAlbums: (callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      () ->
+        self.db.execute 'SELECT COUNT(*) AS "count" FROM (SELECT "Albums"."id" FROM "Albums" 
+            INNER JOIN "Comments" ON "Albums"."name" = "Comments"."album" GROUP BY "Albums"."id")', @
+        return undefined
+
+      (err, rows) ->
+        if err then throw err
+        callback err, rows[0].count
+    )
+
+
+
+  # Gets all albums with comments starting at the given page
+  #
+  # page: starting page number, one-based
+  # count: number of albums to return
+  # callback: err, array of album objects
+  getCommentedAlbums: (page, count, callback) ->
+
+    callback = cutil.ensureCallback callback
+    albums = []
+    self = @
+
+    step(
+
+      # read albums
+      () ->
+        self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count" FROM "Albums"
+            LEFT JOIN "Pictures" ON "Albums"."name" = "Pictures"."album" 
+            INNER JOIN "Comments" ON "Albums"."name" = "Comments"."album"
+            GROUP BY "Albums"."id" ORDER BY "Albums"."name" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @parallel()
         self.db.execute 'SELECT "album", COUNT("album") AS "count" FROM "Comments"
             WHERE "spam"=0 GROUP BY "album"', @parallel()
@@ -205,6 +265,11 @@ class Albums
         callback err
     )
 
+
+  # Gets the thumbnail URL for the given picture
+  thumbURL: (album, pic) ->
+    return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'
+    
 
 module.exports = Albums
 

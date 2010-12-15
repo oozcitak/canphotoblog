@@ -1,13 +1,20 @@
 .pic
 
+  :if picture.prev
+    .prev
+      %a{ href: picture.prev.url }
+        %img{ alt: picture.prev.displayName, src: picture.prev.thumbnail, title: picture.prev.displayName }/
+
   :if picture.next
-    %a{ href: picture.next }
-      %img{ alt: picture.displayName, src: picture.url, title: picture.displayName }/
-
+    %a{ href: picture.next.url }
+      %img.img{ alt: picture.displayName, src: picture.src, title: picture.displayName }/
   :if !picture.next
-    %img{ alt: picture.displayName, src: picture.url, title: picture.displayName }/
+    %img.img{ alt: picture.displayName, src: picture.src, title: picture.displayName }/
 
-
+  :if picture.next
+    .next
+      %a{ href: picture.next.url }
+        %img{ alt: picture.next.displayName, src: picture.next.thumbnail, title: picture.next.displayName }/
 
 .clearfix
 

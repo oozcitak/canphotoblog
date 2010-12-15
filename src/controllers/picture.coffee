@@ -21,7 +21,7 @@ app.get '/pictures/:album/:picture.:ext', (req, res) ->
 
   step(
 
-    # get album
+    # get picture
     () ->
       pictures.getPicture album, picture, @
       return undefined
@@ -30,6 +30,31 @@ app.get '/pictures/:album/:picture.:ext', (req, res) ->
     (err, picinfo) ->
       if err then throw err
       if not picinfo then throw new Error('Picture not found: ' + album + '/' + picture)
+
+      res.render 'picture', {
+          locals: {
+            pagetitle: picinfo.name
+            picture: picinfo
+          }
+        }
+
+  )
+
+
+# GET /random
+app.get '/random', (req, res) ->
+
+  step(
+
+    # get picture
+    () ->
+      pictures.getRandomPicture @
+      return undefined
+
+    # render page
+    (err, picinfo) ->
+      if err then throw err
+      if not picinfo then throw new Error('Random picture not found.')
 
       res.render 'picture', {
           locals: {

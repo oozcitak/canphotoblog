@@ -35,6 +35,15 @@
               %li
                 = picture.name
 
+          %ul
+            %li.first
+              %a{ href: "/comments" }
+                Comments
+          %ul
+            %li.first
+              %a{ href: "/random" } 
+                Random
+
         #container
           :if errorMessages
             .gendiv.error

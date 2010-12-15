@@ -1,5 +1,7 @@
 app = module.parent.exports
 step = require 'step'
+path = require 'path'
+util = require 'util'
 cutil = require '../libs/util'
 
 
@@ -41,18 +43,59 @@ class Pictures
         for i in [0...picturerows.length]
           if picturerows[i].name is pic
             picture = picturerows[i]
-            picture.prev = null
-            picture.next = null
-            if i > 0 then picture.prev = '/pictures/' + album + '/' + picturerows[i - 1].name
-            if i < picturerows.length - 1 then picture.next = '/pictures/' + album + '/' + picturerows[i + 1].name
-
-        picture.album = albumrows[0]
-        picture.album.url = '/albums/' + album
-        picture.url = '/albums/' + album + '/' + picture.name
-        picture.thumbnail = '/thumbs/' + album + '/' + picture.name
-        picture.comments = comments
-        picture.displayName = picture.title or picture.name
+            picture.album = albumrows[0]
+            picture.album.url = '/albums/' + album
+            picture.url = '/pictures' + album + '/' + picture.name
+            picture.src = '/albums/' + album + '/' + picture.name
+            picture.thumbnail = self.thumbURL album, picture.name
+            picture.displayName = picture.title or picture.name
+            picture.comments = comments
  
+            if i > 0
+              picture.prev = picturerows[i - 1]
+              picture.prev.url = '/pictures/' + album + '/' + picture.prev.name
+              picture.prev.src = '/albums' + album + '/' + picture.prev.name
+              picture.prev.thumbnail = self.thumbURL album, picture.prev.name
+              picture.prev.displayName = picture.prev.title or picture.prev.name
+            else
+              picture.prev = null
+
+            if i < picturerows.length - 1
+              picture.next = picturerows[i + 1]
+              picture.next.url = '/pictures/' + album + '/' + picture.next.name
+              picture.next.src = '/albums' + album + '/' + picture.next.name
+              picture.next.thumbnail = self.thumbURL album, picture.next.name
+              picture.next.displayName = picture.next.title or picture.next.name
+            else
+              picture.next = null
+
+        callback err, picture
+    )
+
+
+  # Gets a random picture
+  #
+  # callback: err, picture object
+  getRandomPicture: (callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # get picture
+      () ->
+        self.db.execute 'SELECT "name", "album" FROM "Pictures" ORDER BY RANDOM() LIMIT 1', @
+        return undefined
+      
+      # read picture
+      (err, rows) ->
+        self.getPicture rows[0].album, rows[0].name, @
+        return undefined
+ 
+      # execute callback
+      (err, picture) ->
+        if err then throw err
         callback err, picture
     )
 
@@ -81,6 +124,11 @@ class Pictures
         if err then throw err
         callback err
     )
+
+
+  # Gets the thumbnail URL for the given picture
+  thumbURL: (album, pic) ->
+    return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'
 
 
 module.exports = Pictures
