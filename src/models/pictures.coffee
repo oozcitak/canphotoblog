@@ -45,7 +45,7 @@ class Pictures
             picture = picturerows[i]
             picture.album = albumrows[0]
             picture.album.url = '/albums/' + album
-            picture.url = '/pictures' + album + '/' + picture.name
+            picture.url = '/pictures/' + album + '/' + picture.name
             picture.src = '/albums/' + album + '/' + picture.name
             picture.thumbnail = self.thumbURL album, picture.name
             picture.displayName = picture.title or picture.name
@@ -54,7 +54,7 @@ class Pictures
             if i > 0
               picture.prev = picturerows[i - 1]
               picture.prev.url = '/pictures/' + album + '/' + picture.prev.name
-              picture.prev.src = '/albums' + album + '/' + picture.prev.name
+              picture.prev.src = '/albums/' + album + '/' + picture.prev.name
               picture.prev.thumbnail = self.thumbURL album, picture.prev.name
               picture.prev.displayName = picture.prev.title or picture.prev.name
             else
@@ -63,7 +63,7 @@ class Pictures
             if i < picturerows.length - 1
               picture.next = picturerows[i + 1]
               picture.next.url = '/pictures/' + album + '/' + picture.next.name
-              picture.next.src = '/albums' + album + '/' + picture.next.name
+              picture.next.src = '/albums/' + album + '/' + picture.next.name
               picture.next.thumbnail = self.thumbURL album, picture.next.name
               picture.next.displayName = picture.next.title or picture.next.name
             else

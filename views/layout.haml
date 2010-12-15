@@ -27,13 +27,15 @@
                 = apptitle
             :if album
               %li
-                = album.name
+                %a{ href: album.url } 
+                  = album.name
             :if picture
               %li
                 %a{ href: picture.album.url } 
                   = picture.album.name
               %li
-                = picture.name
+                %a{ href: picture.url } 
+                  = picture.name
 
           %ul
             %li.first
