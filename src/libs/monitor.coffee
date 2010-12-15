@@ -26,28 +26,31 @@ class UploadMonitor
     @thumbSize = thumbSize
     @watchInterval = watchInterval
     @workPerStep = 10
+    @timer = null
 
 
   # Starts watching the uploads folder
   start: () ->
-    @stopWatching = false
-    setTimeout @watchUploads(), @watchInterval
-    util.log 'Upload monitor started.'
+    self = @
+    util.log 'Upload monitor starting.'
+    self.timer = setInterval () ->
+        self.processUploads()
+      , self.watchInterval
 
 
   # Stops watching the uploads folder
   stop: () ->
-    @stopWatching = true
+    if @timer then clearInterval @timer
     util.log 'Upload monitor stopped.'
 
-  # Watches the uploads folder for new pictures
-  watchUploads: () ->
+
+  # Processes the pictures in the uploads folder
+  processUploads: () ->
 
     self = @
-    if self.readingAlbums and not self.stopWatching
-      setTimeout self.watchUploads(), self.watchInterval
-      return
+    if self.readingAlbums then return
     self.readingAlbums = true
+    util.log 'Checking for new uploads.'
     albums = []
 
     step(
@@ -125,8 +128,10 @@ class UploadMonitor
       (err) ->
         if err then throw err
         self.readingAlbums = false
-        if not self.stopWatching
-          setTimeout self.watchUploads(), self.watchInterval
+        if albums.length is 0
+          util.log 'No new uploads.'
+        else
+          util.log 'Read ' + albums.length + ' new albums from uploads.'
     )
 
 

@@ -38,7 +38,8 @@ app.configure () ->
         uploadDir: path.join appRoot, 'uploads'
         dbFile: path.join appRoot, 'album.sqlite'
         akismetClient: null
-        watchInterval: 1000 #1 * 60 * 1000
+        # check for new uploads every 10 minutes
+        watchInterval: 10 * 60 * 1000
       }
 
       # check database
@@ -148,6 +149,7 @@ app.configure () ->
       UploadMonitor = require './libs/monitor'
       monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.thumbSize, settings.watchInterval)
       monitor.start()
+      app.set 'monitor', monitor
 
       # default controller
       app.get '*', (req, res, next) ->
@@ -228,6 +230,12 @@ app.configure () ->
       app.listen 8124
       util.log 'Application started.'
   )
+
+
+# clean-up
+process.on 'exit', () ->
+  monitor = app.set 'monitor'
+  if monitor then monitor.stop()
 
 
 module.exports = app
