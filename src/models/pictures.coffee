@@ -50,6 +50,8 @@ class Pictures
             picture.thumbnail = self.thumbURL album, picture.name
             picture.displayName = picture.title or picture.name
             picture.comments = comments
+            picture.title or= ""
+            picture.text or= ""
  
             if i > 0
               picture.prev = picturerows[i - 1]
@@ -57,6 +59,8 @@ class Pictures
               picture.prev.src = '/albums/' + album + '/' + picture.prev.name
               picture.prev.thumbnail = self.thumbURL album, picture.prev.name
               picture.prev.displayName = picture.prev.title or picture.prev.name
+              picture.prev.title or= ""
+              picture.prev.text or= ""
             else
               picture.prev = null
 
@@ -66,6 +70,8 @@ class Pictures
               picture.next.src = '/albums/' + album + '/' + picture.next.name
               picture.next.thumbnail = self.thumbURL album, picture.next.name
               picture.next.displayName = picture.next.title or picture.next.name
+              picture.next.title or= ""
+              picture.next.text or= ""
             else
               picture.next = null
 
@@ -75,7 +81,7 @@ class Pictures
 
   # Gets a random picture
   #
-  # callback: err, picture object
+  # callback: err, { name, album } object
   getRandomPicture: (callback) ->
 
     callback = cutil.ensureCallback callback

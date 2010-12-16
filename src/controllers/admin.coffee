@@ -17,7 +17,6 @@ app.get '/admin', (req, res) ->
     res.render 'admin', {
         locals: {
           pagetitle: 'Blog Administration'
-          settings: settings
         }
       }
   else
@@ -32,7 +31,9 @@ app.post '/admin', (req, res) ->
     settings.appTitle = req.body.title
     settings.albumsPerPage = parseInt req.body.albums
     settings.picturesPerPage = parseInt req.body.pictures
+    settings.monitorInterval = parseInt req.body.monitorinterval
     settings.thumbSize = parseInt req.body.thumbsize
+    settings.allowComments = if req.body.allowcomments then 1 else 0
     settings.akismetKey = req.body.akismetkey
     settings.akismetURL = req.body.akismeturl
     settings.gaKey = req.body.gakey

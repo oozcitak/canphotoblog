@@ -69,6 +69,8 @@ class Albums
           albums[i].thumbnail = self.thumbURL albums[i].name, albums[i].thumbnail
           albums[i].comments = counts[albums[i].name] or 0
           albums[i].displayName = albums[i].title or albums[i].name
+          albums[i].title or= ""
+          albums[i].text or= ""
 
         callback err, albums
     )
@@ -109,6 +111,8 @@ class Albums
         album.url = '/albums/' + album.name
         album.thumbnail = self.thumbURL album.name, album.pictures[0].name
         album.displayName = album.title or album.name
+        album.title or= ""
+        album.text or= ""
 
         callback err, album
     )
@@ -171,6 +175,8 @@ class Albums
           pictures[i].thumbnail = self.thumbURL name, pictures[i].name
           pictures[i].comments = counts[pictures[i].name] or 0
           pictures[i].displayName = pictures[i].title or pictures[i].name
+          pictures[i].title or= ""
+          pictures[i].text or= ""
 
         callback err, pictures
     )

@@ -27,47 +27,53 @@
     %p
       = album.text
 
-  %hr{ size: 1 }/
 
   :if user
+    %hr{ size: 1 }/
+
     %form{ method: "post", action: "/albums/edit" }
       %input{ type: "hidden", name: "album", value: album.name }/
 
       %p
         %label{ for: "title" }
           Album Title:
-        %input{ type: "text", name: "title", id: "title" }/
+        %input{ type: "text", name: "title", id: "title", value: album.title }/
 
       %p
         %label{ for: "text" }
           Album Text:
         %textarea{ name: "text", id: "text" }
+          = album.text
 
       %p
         %input{ type: "submit", value: "Save" }/
 
-    %hr{ size: 1 }/
 
   :if album.comments.length
+    %hr{ size: 1 }/
+
     %ul.comments
       :each comment in album.comments
         %li
           = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
+
+
+  :if settings.allowComments
     %hr{ size: 1 }/
 
-  %form{ method: "post", action: "/comments/add" }
-    %input{ type: "hidden", name: "album", value: album.name }/
+    %form{ method: "post", action: "/comments/add" }
+      %input{ type: "hidden", name: "album", value: album.name }/
 
-    %p
-      %label{ for: "from" }
-        From:
-      %input{ type: "text", name: "from", id: "from" }/
+      %p
+        %label{ for: "from" }
+          From:
+        %input{ type: "text", name: "from", id: "from" }/
 
-    %p
-      %label{ for: "text" }
-        Comment:
-      %textarea{ name: "text", id: "text" }
+      %p
+        %label{ for: "text" }
+          Comment:
+        %textarea{ name: "text", id: "text" }
 
-    %p
-      %input{ type: "submit", value: "Post Comment" }/
+      %p
+        %input{ type: "submit", value: "Post Comment" }/
 

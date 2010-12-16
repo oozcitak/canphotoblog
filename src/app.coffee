@@ -9,6 +9,10 @@ sqlite = require 'sqlite'
 cutil = require './libs/util'
 
 
+# set the environment to production
+process.env.NODE_ENV = 'development'
+
+
 # Configure and start server
 app = express.createServer()
 app.configure () ->
@@ -38,8 +42,6 @@ app.configure () ->
         uploadDir: path.join appRoot, 'uploads'
         dbFile: path.join appRoot, 'album.sqlite'
         akismetClient: null
-        # check for new uploads every 10 minutes
-        watchInterval: 10 * 60 * 1000
       }
 
       # check database
@@ -81,6 +83,8 @@ app.configure () ->
           'INSERT INTO "Users" ("name", "password") VALUES ("admin", "' + cutil.makeHash('admin') + '");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("albumsPerPage", "20");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("picturesPerPage", "40");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("allowComments", "1");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("monitorInterval", "1");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appName", "canphotoblog");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appTitle", "canphotoblog");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("akismetKey", "");' +
@@ -147,13 +151,19 @@ app.configure () ->
 
       # start upload monitor
       UploadMonitor = require './libs/monitor'
-      monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.thumbSize, settings.watchInterval)
+      monitor = new UploadMonitor(db, settings.albumDir, settings.thumbDir, settings.uploadDir, settings.thumbSize, settings.monitorInterval * 60 * 1000)
       monitor.start()
       app.set 'monitor', monitor
 
       # default controller
       app.get '*', (req, res, next) ->
-        app.helpers { pageCount: 0 }
+        app.helpers {
+          pageCount: 0
+          pagetitle: ''
+          pageCount: 0
+          album: null
+          picture: null
+        }
         next()
 
       # include controllers
@@ -161,14 +171,6 @@ app.configure () ->
         filename = path.join __dirname, 'controllers', file
         if fs.statSync(filename).isFile()
           require './controllers/' + path.basename(file, path.extname(file))
-
-      # set view helpers
-      app.helpers {
-        pagetitle: ''
-        pageCount: 0
-        album: null
-        picture: null
-      }
 
       # dynamic view helpers
       app.dynamicHelpers {
@@ -180,6 +182,9 @@ app.configure () ->
           return app.set('settings').appTitle
         gakey: (req, res) ->
           return app.set('settings').gaKey
+        settings: (req, res) ->
+          return app.set('settings')
+
 
         # returns array of pagination objects
         pagination: (req, res) ->

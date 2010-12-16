@@ -28,9 +28,10 @@
     %p
       = picture.text
 
-  %hr{ size: 1 }/
 
   :if user
+    %hr{ size: 1 }/
+
     %form{ method: "post", action: "/pictures/edit" }
       %input{ type: "hidden", name: "album", value: picture.album.name }/
       %input{ type: "hidden", name: "picture", value: picture.name }/
@@ -38,39 +39,44 @@
       %p
         %label{ for: "title" }
           Picture Title:
-        %input{ type: "text", name: "title", id: "title" }/
+        %input{ type: "text", name: "title", id: "title", value: picture.title }/
 
       %p
         %label{ for: "text" }
           Picture Text:
         %textarea{ name: "text", id: "text" }
+          = picture.text
 
       %p
         %input{ type: "submit", value: "Save" }/
 
-    %hr{ size: 1 }/
 
   :if picture.comments.length
+    %hr{ size: 1 }/
+
     %ul.comments
       :each comment in picture.comments
         %li
           = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
+
+
+  :if settings.allowComments
     %hr{ size: 1 }/
 
-  %form{ method: "post", action: "/comments/add" }
-    %input{ type: "hidden", name: "album", value: picture.album.name }/
-    %input{ type: "hidden", name: "picture", value: picture.name }/
+    %form{ method: "post", action: "/comments/add" }
+      %input{ type: "hidden", name: "album", value: picture.album.name }/
+      %input{ type: "hidden", name: "picture", value: picture.name }/
 
-    %p
-      %label{ for: "from" }
-        From:
-      %input{ type: "text", name: "from", id: "from" }/
+      %p
+        %label{ for: "from" }
+          From:
+        %input{ type: "text", name: "from", id: "from" }/
 
-    %p
-      %label{ for: "text" }
-        Comment:
-      %textarea{ name: "text", id: "text" }
+      %p
+        %label{ for: "text" }
+          Comment:
+        %textarea{ name: "text", id: "text" }
 
-    %p
-      %input{ type: "submit", value: "Post Comment" }/
+      %p
+        %input{ type: "submit", value: "Post Comment" }/
 

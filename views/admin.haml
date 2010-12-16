@@ -15,6 +15,13 @@
       %input{ type: "text", name: "title", id: "title", value: settings.appTitle }/
 
     %p
+      %label{ for: "monitorinterval" }
+        Check for Uploads Every:
+      %input{ type: "text", name: "monitorinterval", id: "monitorinterval", value: settings.monitorInterval }/
+      %span
+        minutes
+
+    %p
       %label{ for: "albums" }
         Albums Per Page:
       %input{ type: "text", name: "albums", id: "albums", value: settings.albumsPerPage }/
@@ -29,6 +36,13 @@
         Thumbnail Size:
       %input{ type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize }/
 
+    %p
+      %label{ for: "allowcomments" }
+        Allow Comments:
+      :if settings.allowComments
+        %input{ type: "checkbox", name: "allowcomments", id: "allowcomments", checked: true }/
+      :if !settings.allowComments
+        %input{ type: "checkbox", name: "allowcomments", id: "allowcomments" }/
 
     %p
       %label{ for: "akismetkey" }

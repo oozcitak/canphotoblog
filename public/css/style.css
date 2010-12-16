@@ -170,6 +170,8 @@ body { background: #1A1A1A url(../img/wood.jpg); }
   box-shadow: 2px 2px 15px #333; text-align: center; margin: 40px 0px 10px; }
 .gendiv p { margin: 6px 0px; overflow: hidden; }
 label { display: block; float: left; text-align: right; width: 200px; margin: 4px 4px 0px 0px; }
+form span { display: block; float: left; margin: 4px; }
+input[type="checkbox"] { border: 2px solid #DADADA; display: block; float: left; padding: 2px; }
 input[type="text"], input[type="password"] { border: 2px solid #DADADA; display: block; float: left; padding: 2px; width: 300px; }
 textarea { border: 2px solid #DADADA; display: block; float: left; padding: 2px; width: 300px; height: 200px; }
 input[type="button"], input[type="submit"] { background: #444; border: 1px solid #444; -moz-border-radius: 5px; 
@@ -190,9 +192,9 @@ ul.commented li img { width: 40px; float: left; margin-right: 6px; }
 ul.commented li .from { font-weight: bold; color: #444; }
 
 /* Comment effects */
-ul.commented li:nth-child(even) { position: relative; left: 4px; }
-ul.commented li:nth-child(3n) { position: relative; left: -2px; -webkit-transform: rotate(-1deg); -moz-transform: rotate(-1deg); }
-ul.commented li:nth-child(5n) { position: relative; left: -4px; -webkit-transform: rotate(-1deg); -moz-transform: rotate(-1deg); }
+ul.commented li:nth-child(even) { position: relative; left: 4px;  -webkit-transform: rotate(0.5deg); -moz-transform: rotate(0.5deg); -o-transform: rotate(0.5deg); }
+ul.commented li:nth-child(3n) { position: relative; left: -2px; -webkit-transform: rotate(-0.5deg); -moz-transform: rotate(-0.5deg); -o-transform: rotate(-0.5deg); }
+ul.commented li:nth-child(5n) { position: relative; left: -4px; -webkit-transform: rotate(-1deg); -moz-transform: rotate(-1deg); -o-transform: rotate(-1deg); }
 ul.commented li:nth-child(8n) { position: relative; top: -2px; }
 ul.commented li:nth-child(11n) { position: relative; top: 2px; }
 
@@ -222,14 +224,14 @@ ul.gallery li { display: inline; }
 .pic .prev:hover, .pic .next:hover { -webkit-transform: scale(1.1); -moz-transform: scale(1.1); }
 
 /* Gallery effects */
-ul.gallery li .thumb { -webkit-transform: rotate(-2deg); -moz-transform: rotate(-2deg); }
-ul.gallery li:nth-child(even) .thumb { -webkit-transform: rotate(2deg); -moz-transform: rotate(2deg); }
-ul.gallery li:nth-child(3n) .thumb { -webkit-transform: none; -moz-transform: none; position: relative; top: -5px; }
-ul.gallery li:nth-child(5n) .thumb { -webkit-transform: rotate(2deg); -moz-transform: rotate(2deg); position: relative; right: 5px; }
+ul.gallery li .thumb { -webkit-transform: rotate(-2deg); -moz-transform: rotate(-2deg); -o-transform: rotate(-2deg); }
+ul.gallery li:nth-child(even) .thumb { -webkit-transform: rotate(2deg); -moz-transform: rotate(2deg); -o-transform: rotate(2deg); }
+ul.gallery li:nth-child(3n) .thumb { -webkit-transform: none; -moz-transform: none; position: relative; top: -5px; -o-transform: none; }
+ul.gallery li:nth-child(5n) .thumb { -webkit-transform: rotate(2deg); -moz-transform: rotate(2deg); position: relative; right: 5px; -o-transform: rotate(2deg); }
 ul.gallery li:nth-child(8n) .thumb { position: relative; top: 8px; right: 5px; }
 ul.gallery li:nth-child(11n) .thumb { position: relative; top: 3px; left: -5px; }
-ul.gallery li .thumb:hover { -webkit-transform: scale(1.1); -moz-transform: scale(1.1); position: relative; z-index:5 }
-ul.gallery li .thumb { -moz-transition: -moz-transform .15s linear; -webkit-transition: -webkit-transform .15s linear; }
+ul.gallery li .thumb:hover { -webkit-transform: scale(1.1); -moz-transform: scale(1.1); -o-transform: scale(1.1); position: relative; z-index:5 }
+ul.gallery li .thumb { -moz-transition: -moz-transform .15s linear; -webkit-transition: -webkit-transform .15s linear; -o-transition: -o-transform .15s linear; }
 
 /* Pagination */
 .pagination { margin: 30px; opacity: 0.6; text-align: center; }
@@ -238,5 +240,5 @@ ul.gallery li .thumb { -moz-transition: -moz-transform .15s linear; -webkit-tran
 .pagination a { background-color: #000; color: #fff; text-decoration: none; }
 .pagination:hover { opacity: 1.0; }
 .pagination a:hover { background-color: #666; }
-.pagination { -moz-transition: opacity .15s linear; -webkit-transition: -webkit-opacity .15s linear; }
+.pagination { -moz-transition: opacity .15s linear; -webkit-transition: -webkit-opacity .15s linear; -o-transition: opacity .15s linear; }
 

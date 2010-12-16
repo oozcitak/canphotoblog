@@ -13,17 +13,21 @@ comments = new Comments db, akismet
 # POST /comments/add
 app.post '/comments/add', (req, res) ->
 
-  album = req.body.album
-  picture = req.body.picture or null
-  name = req.body.from
-  text = req.body.text
+  if settings.allowComments
+    album = req.body.album
+    picture = req.body.picture or null
+    name = req.body.from
+    text = req.body.text
 
-  if picture
-    comments.addToPicture album, picture, name, text, req, (err) ->
-      res.redirect '/pictures/' + album + '/' + picture
+    if picture
+      comments.addToPicture album, picture, name, text, req, (err) ->
+        res.redirect '/pictures/' + album + '/' + picture
+    else
+      comments.addToAlbum album, name, text, req, (err) ->
+        res.redirect '/albums/' + album
   else
-    comments.addToAlbum album, name, text, req, (err) ->
-      res.redirect '/albums/' + album
+    throw new Error('Comments not allowed.')
+    res.redirect '/'
 
 
 # GET /comments

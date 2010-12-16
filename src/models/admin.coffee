@@ -1,3 +1,4 @@
+util = require 'util'
 step = require 'step'
 akismet = require 'akismet'
 cutil = require '../libs/util'
@@ -34,10 +35,12 @@ class Admin
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.appTitle, 'appTitle'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.albumsPerPage, 'albumsPerPage'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.picturesPerPage, 'picturesPerPage'], group()
+        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.monitorInterval, 'monitorInterval'], group()
+        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.thumbSize, 'thumbSize'], group()
+        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.allowComments, 'allowComments'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.akismetKey, 'akismetKey'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.akismetURL, 'akismetURL'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.gaKey, 'gaKey'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [settings.thumbSize, 'thumbSize'], group()
         return undefined
 
       # create akismet client
