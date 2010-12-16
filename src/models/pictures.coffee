@@ -88,15 +88,11 @@ class Pictures
         self.db.execute 'SELECT "name", "album" FROM "Pictures" ORDER BY RANDOM() LIMIT 1', @
         return undefined
       
-      # read picture
+      # return picture
       (err, rows) ->
-        self.getPicture rows[0].album, rows[0].name, @
-        return undefined
- 
-      # execute callback
-      (err, picture) ->
         if err then throw err
-        callback err, picture
+        callback err, rows[0]
+
     )
 
 

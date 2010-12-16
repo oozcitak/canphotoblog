@@ -3,10 +3,11 @@ step = require 'step'
 
 app = module.parent.exports
 db = app.set 'db'
+akismet = app.set 'akismet'
 settings = app.set 'settings'
 
 Comments = require '../models/comments'
-comments = new Comments db
+comments = new Comments db, akismet
 
 
 # POST /comments/add
@@ -23,4 +24,33 @@ app.post '/comments/add', (req, res) ->
   else
     comments.addToAlbum album, name, text, req, (err) ->
       res.redirect '/albums/' + album
- 
+
+
+# GET /comments
+app.get '/comments', (req, res) ->
+
+  page = req.query.page || 1
+
+  step(
+
+    # get commented albums
+    () ->
+      comments.getCommentedPictures page, settings.picturesPerPage, @parallel()
+      comments.countCommentedPictures @parallel()
+      return undefined
+
+    # render page
+    (err, comments, count) ->
+      if err then throw err
+
+      app.helpers { pageCount: Math.ceil(count / settings.picturesPerPage) }
+
+      res.render 'comments', {
+          locals: {
+            comments: comments
+          }
+        }
+
+  )
+
+

@@ -52,16 +52,10 @@ app.get '/random', (req, res) ->
       return undefined
 
     # render page
-    (err, picinfo) ->
+    (err, pic) ->
       if err then throw err
-      if not picinfo then throw new Error('Random picture not found.')
-
-      res.render 'picture', {
-          locals: {
-            pagetitle: picinfo.name
-            picture: picinfo
-          }
-        }
+      if not pic then throw new Error('Random picture not found.')
+      res.redirect '/pictures/' + pic.album + '/' + pic.name
 
   )
 

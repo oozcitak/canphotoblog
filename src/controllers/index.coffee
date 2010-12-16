@@ -9,6 +9,7 @@ settings = app.set 'settings'
 Albums = require '../models/albums'
 albums = new Albums db
 
+
 # GET /
 app.get '/', (req, res) ->
 
@@ -35,33 +36,4 @@ app.get '/', (req, res) ->
         }
 
   )
-
-
-# GET /comments
-app.get '/comments', (req, res) ->
-
-  page = req.query.page || 1
-
-  step(
-
-    # get commented albums
-    () ->
-      albums.getCommentedAlbums page, settings.albumsPerPage, @parallel()
-      albums.countCommentedAlbums @parallel()
-      return undefined
-
-    # render page
-    (err, rows, count) ->
-      if err then throw err
-
-      app.helpers { pageCount: Math.ceil(count / settings.albumsPerPage) }
-
-      res.render 'index', {
-          locals: {
-            albums: rows
-          }
-        }
-
-  )
-
 
