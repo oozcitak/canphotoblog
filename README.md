@@ -33,4 +33,4 @@ You will see a `login` link at the footer of the application. Click this and log
 
 ### Credits:
 
-The polaroid look and advanced css effects are stolen from [Polaroids with CSS3](http://www.zurb.com/playground/css3-polaroids)
+The polaroid look and css effects are stolen from [Polaroids with CSS3](http://www.zurb.com/playground/css3-polaroids)
