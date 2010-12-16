@@ -3,7 +3,7 @@ Licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.
 
 ### Installation:
 
-First off, install `node.js` and `nginx` with your favorite package manager or build them from source. Then install the following node.js packages:
+First off, install `node.js` and `nginx` with your favorite package manager or build them from source. You will also need `imagemagick` and `sqlite3` installed. Then install the following node.js packages:
 
     npm install coffee-script
     npm install step
