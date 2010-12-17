@@ -1,3 +1,13 @@
+.gendiv
+
+  %h1
+    = album.displayName
+
+  :if album.text
+    %p
+      = album.text
+
+
 %ul.gallery
   :each picture in album.pictures
     %li
@@ -18,18 +28,11 @@
 
 .clearfix
 
-.gendiv
+:if user
+  .gendiv
 
-  %h1
-    = album.displayName
-
-  :if album.text
-    %p
-      = album.text
-
-
-  :if user
-    %hr{ size: 1 }/
+    %h1
+      Edit Album
 
     %form{ method: "post", action: "/albums/edit" }
       %input{ type: "hidden", name: "album", value: album.name }/
@@ -49,17 +52,21 @@
         %input{ type: "submit", value: "Save" }/
 
 
-  :if album.comments.length
-    %hr{ size: 1 }/
+:if album.comments.length
+  %ul.comments
+    :each comment in album.comments
+      %li
+        .from
+          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
+        .text
+          = comment.text
 
-    %ul.comments
-      :each comment in album.comments
-        %li
-          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
 
+:if settings.allowComments
+  .gendiv
 
-  :if settings.allowComments
-    %hr{ size: 1 }/
+    %h1
+      Add Comment
 
     %form{ method: "post", action: "/comments/add" }
       %input{ type: "hidden", name: "album", value: album.name }/

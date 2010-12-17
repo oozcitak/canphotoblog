@@ -15,11 +15,6 @@
     .next
       %a{ href: picture.next.url }
         %img{ alt: picture.next.displayName, src: picture.next.thumbnail, title: picture.next.displayName }/
-
-.clearfix
-
-.gendiv
-
   %h1
     = picture.displayName 
     = ' (' + picture.dateTaken + ')'
@@ -28,9 +23,14 @@
     %p
       = picture.text
 
+.clearfix
 
-  :if user
-    %hr{ size: 1 }/
+
+:if user
+  .gendiv
+
+    %h1
+      Edit Picture
 
     %form{ method: "post", action: "/pictures/edit" }
       %input{ type: "hidden", name: "album", value: picture.album.name }/
@@ -51,17 +51,22 @@
         %input{ type: "submit", value: "Save" }/
 
 
-  :if picture.comments.length
-    %hr{ size: 1 }/
+:if picture.comments.length
+  %ul.comments
+    :each comment in picture.comments
+      %li
+        .from
+          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
+        .text
+          = comment.text
+        .clearfix
 
-    %ul.comments
-      :each comment in picture.comments
-        %li
-          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): ' + comment.text
 
+:if settings.allowComments
+  .gendiv
 
-  :if settings.allowComments
-    %hr{ size: 1 }/
+    %h1
+      Add Comment
 
     %form{ method: "post", action: "/comments/add" }
       %input{ type: "hidden", name: "album", value: picture.album.name }/
