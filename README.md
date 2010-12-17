@@ -10,9 +10,35 @@ First off, install `node.js` and `nginx` with your favorite package manager or b
     npm install akismet
     npm install sqlite
 
-The idea is to have `nginx` serve images and `node.js` to generate dynamic pages. Let's go ahead and do this. Edit your `nginx` configuration file; it should look like this:
+The idea is to have `nginx` serve images and `node.js` generate dynamic pages. Let's go ahead and do this. Edit your `nginx` configuration file for your site; it should look like this:
 
-    TODO: Add nginx conf here
+    server
+    {
+      listen 80;
+      server_name canhpotoblog;
+      root /path/to/canphotoblog/public/;
+
+      location /
+      {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_redirect off;
+
+        if (-f $request_filename)
+        {
+          expires max;
+          break;
+        }
+
+        if (!-f $request_filename)
+        {
+          proxy_pass http://127.0.0.1:8124;
+          break;
+        }
+      }
+    }
 
 Let us now clone the `canphotoblog` repository and build it:
 
@@ -21,11 +47,11 @@ Let us now clone the `canphotoblog` repository and build it:
     make
     node lib/app.js
 
-Great! Your new photo blog is now running. There aren't any pictures to look at though. Let's fix this next.
+Great! Your new photo blog is now running. (You will want to add this to a startup script to make sure the application is started when the server is rebooted.) Although the application is running there aren't any pictures to look at. Let's fix this next.
 
 ### Usage:
 
-The application monitors the `uploads` folder for new images. To add a new image copy it into the `uploads` folder. If you copy images into a subfolder in the `uploads` folder, the subfolder name will be used as the album name, otherwise the album name will be the date the picture was taken. Go ahead and copy some images into the `uploads` folder. After a couple minutes those images should be visible.
+The application monitors the `uploads` folder for new images. To add a new image, copy it into the `uploads` folder. If you copy images into a subfolder in the `uploads` folder, the subfolder name will be used as the album name, otherwise the album name will be the date the picture was taken. Go ahead and copy some images into the `uploads` folder. After a couple minutes those images should be visible.
 
 ### Administration:
 
