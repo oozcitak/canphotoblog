@@ -235,9 +235,12 @@ ul.gallery li .thumb { -moz-transition: -moz-transform .15s linear; -webkit-tran
 /* Pagination */
 .pagination { margin: 30px; opacity: 0.6; text-align: center; }
 .pagination a, .pagination span { font-size: 125%; padding: 6px; }
-.pagination span { background-color: #fff; color: #000; }
+.pagination span { background-color: #fff; color: #aaa; }
+.pagination span.current { background-color: #fff; color: #000; }
 .pagination a { background-color: #000; color: #fff; text-decoration: none; }
 .pagination:hover { opacity: 1.0; }
 .pagination a:hover { background-color: #666; }
 .pagination { -moz-transition: opacity .15s linear; -webkit-transition: -webkit-opacity .15s linear; -o-transition: opacity .15s linear; }
+.pagination .button { margin: 0px 6px; padding: 6px 12px; }
+.pagination .ellipsis { padding: 6px 40px; }
 

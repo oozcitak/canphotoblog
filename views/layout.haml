@@ -65,10 +65,14 @@
           .pagination
             :each page in pagination
               :if !page.islink
-                %span
-                  = page.text
+                :if page.current
+                  %span.current{ class: page.classname }
+                    = page.text
+                :if !page.current
+                  %span{ class: page.classname }
+                    = page.text
               :if page.islink
-                %a{ href: page.url }
+                %a{ href: page.url, class: page.classname }
                   = page.text
 
     #footer

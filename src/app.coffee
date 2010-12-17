@@ -185,31 +185,13 @@ app.configure () ->
         settings: (req, res) ->
           return app.set('settings')
 
-
         # returns array of pagination objects
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
-          if pages <= 1 then return null
-
-          parts = url.parse req.url, true
-          pathname = parts.pathname
-          query = parts.query or { page: '1' }
-          if not query.page? then query.page = '1'
-          page = parseInt(query.page)
-
-          pagination = []
-          for i in [1...(1 + pages)]
-            opage = {}
-            opage.text = String(i)
-            opage.selected = if i is page then true else false
-            opage.islink = !opage.selected
-
-            query.page = String(i)
-            parts = { pathname: pathname, query: query }
-            opage.url = url.format parts
-            pagination.push opage
-
-          return pagination
+          if pages <= 1
+            return null
+          else
+            return cutil.getPagination req.url, pages
 
         # returns an array of error messages
         errorMessages: (req, res) ->
