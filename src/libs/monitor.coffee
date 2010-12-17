@@ -52,26 +52,32 @@ class UploadMonitor
     self.readingAlbums = true
     util.log 'Checking for new uploads.'
     albums = []
+    pictures = []
 
     step(
 
-      # move pictures in root folder
+      # get list of pictures
       () ->
-        self.moveRootPictures @
+        self.readAllPictures @
         return undefined
 
-      # get albums
-      (err) ->
+      # save albums into db
+      (err, uploads) ->
         if err then throw err
-        self.readUploads @
-        return undefined
+        pictures = uploads
+        if pictures.length is 0 then return null
+ 
+        # dest paths
+        for i in [0...pictures.length]
+          pictures[i].dest = path.join self.albumDir, pictures[i].album, pictures[i].name
 
-      # save albums
-      (err, newalbums) ->
-        if err then throw err
-        albums = newalbums
-        if albums.length is 0 then return null
+        # make albums
+        albums = []
+        for pic in pictures
+          if pic.album not in albums
+            albums.push pic.album
 
+        # save to database
         albumSQL = 'INSERT INTO "Albums" ("name", "dateCreated") 
             SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM "Albums" WHERE "name"=?)'
         pictureSQL = 'INSERT INTO "Pictures" ("name", "dateTaken", "album") 
@@ -79,105 +85,101 @@ class UploadMonitor
 
         group = @group()
         for album in albums
-          self.db.execute albumSQL, [album.name, cutil.dateToSQLite(album.dateCreated), album.name], group()
-
-          for picture in album.pictures
-            self.db.execute pictureSQL, [picture.name, cutil.dateToSQLite(picture.dateTaken), album.name, picture.name, album.name], group()
+          self.db.execute albumSQL, [album, cutil.dateToSQLite(), album], group()
+        for pic in pictures
+          self.db.execute pictureSQL, [pic.name, cutil.dateToSQLite(pic.dateTaken), pic.album, pic.name, pic.album], group()
 
         return undefined
 
-      # check directories
+      # check album directories
       (err) ->
         if err then throw err
         if albums.length is 0 then return []
         group = @group()
         for album in albums
-          cutil.fileExists path.join(self.albumDir, album.name), group()
+          cutil.fileExists path.join(self.albumDir, album), group()
         return undefined
 
-      # make directories
+      # make album directories
       (err, exists) ->
         if err then throw err
         if exists.length is 0 then return null
         group = @group()
+        madedir = false
         for i in [0...albums.length]
           if not exists[i]
-            fs.mkdir path.join(self.albumDir, albums[i].name), 0755, group()
+            fs.mkdir path.join(self.albumDir, albums[i]), 0755, group()
+            madedir = true
+        if not madedir then return null
         return undefined
- 
+
+      # check thumb directories
+      (err) ->
+        if err then throw err
+        if albums.length is 0 then return []
+        group = @group()
+        for album in albums
+          cutil.fileExists path.join(self.thumbDir, album), group()
+        return undefined
+
+      # make thumb directories
+      (err, exists) ->
+        if err then throw err
+        if exists.length is 0 then return null
+        group = @group()
+        madedir = false
+        for i in [0...albums.length]
+          if not exists[i]
+            fs.mkdir path.join(self.thumbDir, albums[i]), 0755, group()
+            madedir = true
+        if not madedir then return null
+        return undefined
+
+      # make thumbnails
+      (err) ->
+        if err then throw err
+        if pictures.length is 0 then return []
+        group = @group()
+        for pic in pictures
+          src = pic.source
+          ext = path.extname pic.name
+          dst = path.join(self.thumbDir, pic.album, path.basename(pic.name, ext) + '.png')
+          im.makeThumbnail src, dst, self.thumbSize, group()
+        return undefined
+
       # move pictures
       (err) ->
         if err then throw err
-        if albums.length is 0 then return null
+        if pictures.length is 0 then return null
         group = @group()
-        for album in albums
-          for picture in album.pictures
-            fs.rename path.join(self.uploadDir, album.name, picture.name), path.join(self.albumDir, album.name, picture.name), group()
+        for picture in pictures
+          fs.rename picture.source, picture.dest, group()
         return undefined
        
       # delete upload folders
       (err) ->
         if err then throw err
-        if albums.length is 0 then return null
+        if pictures.length is 0 then return null
         group = @group()
         for album in albums
-          fs.rmdir path.join(self.uploadDir, album.name), group()
+          fs.rmdir path.join(self.uploadDir, album), group()
         return undefined
 
       # done
       (err) ->
         if err then throw err
         self.readingAlbums = false
-        if albums.length is 0
+        if pictures.length is 0
           util.log 'No new uploads.'
         else
-          util.log 'Read ' + albums.length + ' new albums from uploads.'
+          util.log 'Read ' + pictures.length + ' new pictures from uploads.'
     )
 
 
-  # Reads and returns albums from the filesystem
+  # Reads all pictures in the upload folder
   #
-  # callback: err, array of album objects
-  readUploads: (callback) ->
-
-    callback = cutil.ensureCallback callback
-    self = @
-    root = @uploadDir
-
-    step(
-
-      # read directories
-      () ->
-        fs.readdir root, @
-        return undefined
-
-      # build albums
-      (err, dirNames) ->
-        if err then throw err
-        if dirNames? and dirNames.length is 0 then return []
-        dirNames = dirNames.slice(0, self.workPerStep)
-        group = @group()
-        for dirName in dirNames
-          dir = path.join root, dirName
-          if fs.statSync(dir).isDirectory()
-            self.readAlbumFromFS dir, group()
-        return undefined
-
-      # return albums
-      (err, albums) ->
-        if err then throw err
-        newalbums = []
-        for album in albums
-          if album.pictures.length isnt 0 then newalbums.push album
-        callback err, newalbums
-
-    )
-
-
-  # Moves pictures in root upload folder into their own album folders
-  #
-  # callback: err
-  moveRootPictures: (callback) ->
+  # callback: err, array of picture objects
+  readAllPictures: (callback) ->
 
     callback = cutil.ensureCallback callback
     self = @
@@ -188,126 +190,87 @@ class UploadMonitor
 
       # read files
       () ->
-        fs.readdir root, @
+        # read images in root
+        self.readPictures root, @parallel()
+        # read sub directories
+        fs.readdir root, @parallel()
         return undefined
 
-      # read date taken
-      (err, fileNames) ->
+      # read pictures in album directories
+      (err, rootpics, dirNames) ->
         if err then throw err
-        fileNames = fileNames.slice(0, self.workPerStep)
-        group = @group()
-        for fileName in fileNames
-          file = path.join root, fileName
-          if fs.statSync(file).isFile() and path.extname(file).toLowerCase() is '.jpg'
-            pictures.push { name: fileName, source: file }
-            im.getDate file, group()
-        if pictures.length is 0 then return []
-        return undefined
 
-      # check directories
-      (err, dates) ->
-        if err then throw err
-        if pictures.length is 0 then return []
-        if not dates or dates.length isnt pictures.length then throw new Error('Error reading root picture dates from file system.')
-        group = @group()
-        for i in [0...dates.length]
-          dir = path.join root, cutil.dateToSQLite(dates[i], false)
-          pictures[i].destDir = dir
-          pictures[i].dest = path.join dir, pictures[i].name
-          cutil.fileExists dir, group()
-        return undefined
-
-      # make directories
-      (err, exists) ->
-        if err then throw err
-        if pictures.length is 0 then null
-        if not exists or exists.length isnt pictures.length then throw new Error('Error reading root picture dir states from file system.')
-        group = @group()
-        madedirs = false
+        # assign album names to root pictures
+        pictures = rootpics
         for i in [0...pictures.length]
-          if not exists[i]
-            madedirs = true
-            fs.mkdir pictures[i].destDir, 0755, group()
-        if not madedirs then return null else return undefined
-      
-      # move pictures
-      (err) ->
-        if err then throw err
-        if pictures.length is 0 then return null
+          date = pictures[i].dateTaken or pictures[i].dateModified
+          pictures[i].album = cutil.dateToSQLite date, false
+        
+        hasdirs = false
         group = @group()
-        for picture in pictures
-          fs.rename picture.source, picture.dest, group()
+        for dirName in dirNames
+          dir = path.join root, dirName
+          if fs.statSync(dir).isDirectory()
+            hasdirs = true
+            self.readPictures dir, group()
+        if not hasdirs then return []
         return undefined
 
-      # execute callback
-      (err) ->
+      # assign album names to pictures in album directories
+      (err, albums) ->
         if err then throw err
-        callback err
+
+        for pics in albums
+          if pics.length isnt 0
+            dirName = path.basename(path.dirname(pics[0].source))
+            for i in [0...pics.length]
+              pics[i].album = dirName
+              pictures.push pics[i]
+
+        callback err, pictures
 
     )
 
 
-  # Reads and returns an album from the filesystem
+  # Reads pictures in the given folder
   #
-  # root: path to album directory
-  # callback: err, album object
-  readAlbumFromFS: (root, callback) ->
+  # root: folder to read
+  # callback: err, array of picture objects
+  readPictures: (root, callback) ->
 
     callback = cutil.ensureCallback callback
     self = @
-    album = {}
+    pictures = []
 
     step(
 
-      # read directory
+      # read files
       () ->
         fs.readdir root, @
         return undefined
-        
-      # save pictures
+
+      # separate images and read exif date taken
       (err, fileNames) ->
         if err then throw err
-
-        albumName = path.basename root
-        pics = []
+        group = @group()
         for fileName in fileNames
           file = path.join root, fileName
-          if fs.statSync(file).isFile() and path.extname(file).toLowerCase() is '.jpg'
-            pic = {
-              name: fileName
-            }
-            pics.push pic
+          stat = fs.statSync file
+          if stat.isFile() and path.extname(file).toLowerCase() is '.jpg'
+            pictures.push { name: fileName, source: file, dateModified: stat.mtime }
+            im.getDate file, group()
 
-        album = {
-          name: albumName
-          pictures: pics
-          dateCreated: new Date()
-        }
-
-        if album.pictures.length is 0 then return null
-
-        # create thumbnails
-        im.makeAllThumbnails root, path.join(self.thumbDir, album.name), self.thumbSize, @
+        if pictures.length is 0 then return []
         return undefined
 
-      # read date taken
-      (err) ->
-        if err then throw err
-        if album.pictures.length is 0 then return []
-        group = @group()
-        for pic in album.pictures
-          im.getDate path.join(root, pic.name), group()
-        return undefined
-
-      # save date taken
+      # execute callback
       (err, dates) ->
         if err then throw err
-        if not dates or dates.length isnt album.pictures.length then throw new Error('Error reading album ' + album.name + ' from file system.')
-
+        if not dates or dates.length isnt pictures.length then throw new Error('Error reading picture dates from file system.')
         for i in [0...dates.length]
-          album.pictures[i].dateTaken = dates[i]
+          pictures[i].dateTaken = dates[i]
 
-        callback err, album
+        callback err, pictures
     )
 
 
