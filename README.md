@@ -15,8 +15,8 @@ The idea is to have `nginx` serve images and `node.js` generate dynamic pages. L
     server
     {
       listen 80;
-      server_name canpotoblog;
-      root /path/to/canpotoblog/public/;
+      server_name canhpotoblog;
+      root /path/to/canphotoblog/public/;
 
       location /
       {
