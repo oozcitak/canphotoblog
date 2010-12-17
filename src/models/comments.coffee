@@ -15,6 +15,29 @@ class Comments
     @akismetClient = akismetClient
 
 
+  # Gets the comment the given id
+  #
+  # id: comment id
+  # callback: err, comment object
+  get: (id, callback) ->
+
+    self = @
+
+    step(
+
+      # read comment
+      () ->
+        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        return undefined
+ 
+      #execute callback
+      (err, comments) ->
+        if err then throw err
+        callback err, comments[0]
+         
+    )
+
+
   # Adds a new comment to an album
   #
   # album: album name
@@ -134,9 +157,9 @@ class Comments
 
     step(
 
-      # read albums
+      # read comments
       () ->
-        self.db.execute 'SELECT * FROM "Comments" ORDER BY "dateCommented" DESC LIMIT ' +
+        self.db.execute 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0 ORDER BY "dateCommented" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @
         return undefined
 
@@ -153,7 +176,124 @@ class Comments
     )
 
 
+  # Edits the comment with the given id
+  #
+  # id: comment id
+  # name: comment author
+  # text: comment text
+  # callback: err
+  edit: (id, name, text, callback) ->
+
+    self = @
+
+    step(
+
+      # delete comment
+      () ->
+        self.db.execute 'UPDATE "Comments" SET "from"=?, "text"=? WHERE "id"=?', [name, text, id], @
+        return undefined
+
+      #execute callback
+      (err) ->
+        if err then throw err
+        callback err
+         
+    )
+
+
+  # Deletes the comment with the given id
+  #
+  # id: comment id
+  # callback: err
+  delete: (id, callback) ->
+
+    self = @
+
+    step(
+
+      # delete comment
+      () ->
+        self.db.execute 'DELETE FROM "Comments" WHERE "id"=?', [id], @
+        return undefined
+
+      #execute callback
+      (err) ->
+        if err then throw err
+        callback err
+         
+    )
+
+
+  # Marks the comment with the given id as spam
+  #
+  # id: comment id
+  # callback: err
+  markSpam: (id, callback) ->
+
+    self = @
+
+    step(
+
+      # read comment
+      () ->
+        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        return undefined
+ 
+      # send feedback and mark comment
+      (err, comments) ->
+        if err then throw err
+        comment = comments[0]
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "spam"=1 WHERE "id"=?', [id], group()
+        if self.akismetClient
+          self.akismetClient.submitSpam { comment_author: comment.from, comment_content: comment.text, user_ip: comment.ip }, group()
+        return undefined
+
+      #execute callback
+      (err) ->
+        if err then throw err
+        callback err
+         
+    )
+
+
+  # Marks the comment with the given id as ham
+  #
+  # id: comment id
+  # callback: err
+  markHam: (id, callback) ->
+
+    self = @
+
+    step(
+
+      # read comment
+      () ->
+        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        return undefined
+ 
+      # send feedback and mark comment
+      (err, comments) ->
+        if err then throw err
+        comment = comments[0]
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "spam"=0 WHERE "id"=?', [id], group()
+        if self.akismetClient
+          self.akismetClient.submitHam { comment_author: comment.from, comment_content: comment.text, user_ip: comment.ip }, group()
+        return undefined
+
+      #execute callback
+      (err) ->
+        if err then throw err
+        callback err
+         
+    )
+
+
   # Gets the thumbnail URL for the given picture
+  #
+  # album: album name
+  # pic: picture name
   thumbURL: (album, pic) ->
     return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'
  

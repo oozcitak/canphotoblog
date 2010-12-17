@@ -1,0 +1,21 @@
+.gendiv
+
+  %h1
+    Edit Comment
+
+  %form{ method: "post", action: "/comments/edit/" + comment.id }
+
+      %p
+        %label{ for: "name" }
+          From:
+        %input{ type: "text", name: "name", id: "name", value: comment.from }/
+
+      %p
+        %label{ for: "text" }
+          Text:
+        %textarea{ name: "text", id: "text" }
+          = comment.text
+
+      %p
+        %input{ type: "submit", value: "Save" }/
+

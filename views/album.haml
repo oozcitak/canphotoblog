@@ -56,6 +56,14 @@
   %ul.comments
     :each comment in album.comments
       %li
+        :if user
+          .button-box
+            %a.edit{ href: '/comments/edit/' + comment.id, title: 'edit' }
+              &nbsp;
+            %a.delete{ href: '/comments/delete/' + comment.id, title: 'delete' }
+              &nbsp;
+            %a.flag{ href: '/comments/spam/' + comment.id, title: 'mark as spam' }
+              &nbsp;
         .from
           = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
         .text
