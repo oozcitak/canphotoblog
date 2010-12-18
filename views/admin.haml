@@ -1,7 +1,7 @@
 .gendiv
 
   %h1
-    settings
+    Settings
 
   %form{ method: "post", action: "/admin" }
     %p
@@ -65,7 +65,42 @@
 .gendiv
 
   %h1
-    password
+    Style
+
+  %form{ method: "post", action: "/admin/style" }
+    %p
+      %label{ for: "bgcolor" }
+        Background Color:
+      %input{ type: "text", name: "bgcolor", id: "bgcolor", value: settings.backgroundColor }/
+
+    %p
+      %label{ for: "bgimage" }
+        Background Image:
+
+      %select{ name: "bgimage", id: "bgimage" }
+
+        :if !settings.backgroundImage || settings.backgroundImage == 'None'
+          %option{ value: 'None', selected: "selected" }
+            None
+        :if settings.backgroundImage && settings.backgroundImage != 'None'
+          %option{ value: 'None' }
+            None
+
+        :each image in bgimages
+          :if settings.backgroundImage == image
+            %option{ value: image, selected: "selected" }
+              = image
+          :if settings.backgroundImage != image
+            %option{ value: image }
+              = image
+
+    %p
+      %input{ type: "submit", value: "Save Background" }/
+
+.gendiv
+
+  %h1
+    Password
 
   %form{ method: "post", action: "/admin/password" }
     %p

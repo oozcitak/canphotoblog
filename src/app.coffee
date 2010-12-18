@@ -37,6 +37,8 @@ app.configure () ->
 
       # settings
       settings = {
+        rootDir: appRoot
+        publicDir: path.join appRoot, 'public'
         albumDir: path.join appRoot, 'public', 'albums'
         thumbDir: path.join appRoot, 'public', 'thumbs'
         uploadDir: path.join appRoot, 'uploads'
@@ -87,6 +89,8 @@ app.configure () ->
           'INSERT INTO "Settings" ("name", "value") VALUES ("monitorInterval", "1");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appName", "canphotoblog");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appTitle", "canphotoblog");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundColor", "");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundImage", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("akismetKey", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("akismetURL", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("gaKey", "");' +

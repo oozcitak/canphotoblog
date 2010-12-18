@@ -14,11 +14,13 @@ admin = new Admin db
 # GET /admin
 app.get '/admin', (req, res) ->
   if req.session.userid
-    res.render 'admin', {
-        locals: {
-          pagetitle: 'Blog Administration'
+    admin.getBackgrounds app, (err, images) ->
+      res.render 'admin', {
+          locals: {
+            pagetitle: 'Blog Administration'
+            bgimages: images
+          }
         }
-      }
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
@@ -45,6 +47,21 @@ app.post '/admin', (req, res) ->
         req.flash 'info', 'Akismet key verified.'
       else
         req.flash 'error', 'Could not verify Akismet key.'
+      res.redirect '/admin'
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /admin/background
+app.post '/admin/style', (req, res) ->
+  if req.session.userid
+    settings.backgroundColor = req.body.bgcolor
+    settings.backgroundImage = req.body.bgimage
+
+    admin.changeStyle app, settings, (err) ->
+      if err then throw err
+      req.flash 'info', 'Background settings saved.'
       res.redirect '/admin'
   else
     req.flash 'error', 'Access denied.'

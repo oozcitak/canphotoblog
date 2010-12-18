@@ -13,9 +13,9 @@
         = ' | ' + pagetitle
 
     %link{ rel: "stylesheet", href: "/css/style.css" }/
-    %script{ src: "/js/lib/modernizr-1.6.min.js" }
+    %script{ src: "/js/libs/modernizr-1.6.min.js" }
 
-  %body
+  %body{ style: "background: #{settings.backgroundColor} url('../img/backgrounds/#{settings.backgroundImage}')" }
 
     #wrap
       #main
@@ -79,7 +79,7 @@
       .border
 
       powered by 
-      %a{ href: "http://github.com/oozcitak/canphotoblog" }
+      %a{ href: "//github.com/oozcitak/canphotoblog" }
         canphotoblog
 
       :if user
@@ -94,6 +94,12 @@
         &nbsp;|&nbsp;
         %a{ href: "/login" }
           login
+
+    %script{ src: "//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js" }/
+    :javascript
+      !window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))
+    %script{ src: "/js/plugins.js" }
+    %script{ src: "/js/script.js" }
 
     :if gakey
       :javascript

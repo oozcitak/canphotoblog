@@ -149,7 +149,7 @@ html, body { height: 100%; }
 body:before { content:""; height:100%; float:left; width:0; margin-top:-32767px;} /* Opera Fix */
 
 /* Primary Styles */
-body { background: #1A1A1A url(../img/wood.jpg); }
+body { background: #1A1A1A url('../img/backgrounds/Wood Floor.jpg'); }
 #container { width: 750px; margin: 40px auto; text-align: center; }
 #header { background: #fff; color: #444; text-align: center;
   opacity: 0.4; border-bottom: solid 5px #9eaaaf; font-size: 125%;
@@ -172,8 +172,9 @@ body { background: #1A1A1A url(../img/wood.jpg); }
 label { display: block; float: left; text-align: right; width: 200px; margin: 4px 4px 0px 0px; }
 form span { display: block; float: left; margin: 4px; }
 input[type="checkbox"] { border: 2px solid #DADADA; display: block; float: left; padding: 2px; }
-input[type="text"], input[type="password"] { border: 2px solid #DADADA; display: block; float: left; padding: 2px; width: 300px; }
-textarea { border: 2px solid #DADADA; display: block; float: left; padding: 2px; width: 300px; height: 200px; }
+input[type="text"], input[type="password"], select, textarea { border: 2px solid #DADADA; 
+  display: block; float: left; padding: 2px; width: 300px; }
+textarea { height: 200px; }
 input[type="button"], input[type="submit"] { background: #444; border: 1px solid #444; -moz-border-radius: 5px; 
   border-radius: 5px; color: white; display: block; float: left; margin-left: 204px; padding: 4px; }
 .error { background: #FEE; border: 1px solid #C44; color: #C22; font-weight: bold; }
