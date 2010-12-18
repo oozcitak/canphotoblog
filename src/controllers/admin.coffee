@@ -26,43 +26,77 @@ app.get '/admin', (req, res) ->
     res.redirect '/login'
 
 
-# POST /admin
-app.post '/admin', (req, res) ->
+# POST /admin/app
+app.post '/admin/app', (req, res) ->
   if req.session.userid
-    settings.appName = req.body.name
-    settings.appTitle = req.body.title
-    settings.albumsPerPage = parseInt req.body.albums
-    settings.picturesPerPage = parseInt req.body.pictures
-    settings.monitorInterval = parseInt req.body.monitorinterval
-    settings.thumbSize = parseInt req.body.thumbsize
-    settings.allowComments = if req.body.allowcomments then 1 else 0
-    settings.akismetKey = req.body.akismetkey
-    settings.akismetURL = req.body.akismeturl
-    settings.gaKey = req.body.gakey
+    appName = req.body.name
+    appTitle = req.body.title
+    monitorInterval = parseInt req.body.monitorinterval
 
-    admin.changeSettings app, settings, (err, verified) ->
+    admin.changeAppSettings app, appName, appTitle, monitorInterval, (err) ->
       if err then throw err
-      req.flash 'info', 'Settings saved.'
-      if verified
-        req.flash 'info', 'Akismet key verified.'
-      else
-        req.flash 'error', 'Could not verify Akismet key.'
-      res.redirect '/admin'
+      req.flash 'info', 'Application settings saved.'
+      res.redirect '/admin#app'
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
 
 
-# POST /admin/background
+# POST /admin/view
+app.post '/admin/view', (req, res) ->
+  if req.session.userid
+    albumsPerPage = parseInt req.body.albums
+    picturesPerPage = parseInt req.body.pictures
+    thumbSize = parseInt req.body.thumbsize
+
+    admin.changeViewSettings app, albumsPerPage, picturesPerPage, thumbSize, (err) ->
+      if err then throw err
+      req.flash 'info', 'View settings saved.'
+      res.redirect '/admin#view'
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /admin/comments
+app.post '/admin/comments', (req, res) ->
+  if req.session.userid
+    allowComments = if req.body.allowcomments then 1 else 0
+    akismetKey = req.body.akismetkey
+    akismetURL = req.body.akismeturl
+
+    admin.changeCommentSettings app, allowComments, akismetKey, akismetURL, (err, verified) ->
+      if err then throw err
+      req.flash 'info', 'Comment settings saved.'
+      if verified
+        req.flash 'info', 'Akismet key verified.'
+      else
+        req.flash 'error', 'Could not verify Akismet key.'
+      res.redirect '/admin#comments'
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /admin/analytics
+app.post '/admin/analytics', (req, res) ->
+  if req.session.userid
+    admin.changeAnalyticsSettings app, req.body.gakey, (err) ->
+      if err then throw err
+      req.flash 'info', 'Analytics settings saved.'
+      res.redirect '/admin#analytics'
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /admin/style
 app.post '/admin/style', (req, res) ->
   if req.session.userid
-    settings.backgroundColor = req.body.bgcolor
-    settings.backgroundImage = req.body.bgimage
-
-    admin.changeStyle app, settings, (err) ->
+    admin.changeStyle app, req.body.bgcolor, req.body.bgimage, (err) ->
       if err then throw err
-      req.flash 'info', 'Background settings saved.'
-      res.redirect '/admin'
+      req.flash 'info', 'Style settings saved.'
+      res.redirect '/admin#style'
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
@@ -74,7 +108,7 @@ app.post '/admin/password', (req, res) ->
     users.changePassword req.session.userid, req.body.password, (err) ->
       if err then throw err
       req.flash 'info', 'Password changed.'
-      res.redirect '/admin'
+      res.redirect '/admin#password'
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'

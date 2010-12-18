@@ -1,9 +1,10 @@
 .gendiv
 
   %h1
-    Settings
+    %a{ name: "app" }
+    Application Settings
 
-  %form{ method: "post", action: "/admin" }
+  %form{ method: "post", action: "/admin/app" }
     %p
       %label{ for: "name" }
         Application Name:
@@ -22,6 +23,16 @@
         minutes
 
     %p
+      %input{ type: "submit", value: "Save Application Settings" }/
+
+.gendiv
+
+  %h1
+    %a{ name: "view" }
+    View Settings
+
+  %form{ method: "post", action: "/admin/view" }
+    %p
       %label{ for: "albums" }
         Albums Per Page:
       %input{ type: "text", name: "albums", id: "albums", value: settings.albumsPerPage }/
@@ -36,6 +47,18 @@
         Thumbnail Size:
       %input{ type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize }/
 
+    %p
+      %input{ type: "submit", value: "Save View Settings" }/
+
+.gendiv
+
+  %h1
+    %a{ name: "comments" }
+    Comment Settings
+
+  %form{ method: "post", action: "/admin/comments" }
+    %p
+ 
     %p
       %label{ for: "allowcomments" }
         Allow Comments:
@@ -55,16 +78,12 @@
       %input{ type: "text", name: "akismeturl", id: "akismeturl", value: settings.akismetURL }/
 
     %p
-      %label{ for: "gakey" }
-        Google Analytics Key:
-      %input{ type: "text", name: "gakey", id: "gakey", value: settings.gaKey }/
-
-    %p
-      %input{ type: "submit", value: "Save Settings" }/
+      %input{ type: "submit", value: "Save Comment Settings" }/
 
 .gendiv
 
   %h1
+    %a{ name: "style" }
     Style
 
   %form{ method: "post", action: "/admin/style" }
@@ -95,11 +114,29 @@
               = image
 
     %p
-      %input{ type: "submit", value: "Save Background" }/
+      %input{ type: "submit", value: "Save Style Settings" }/
 
 .gendiv
 
   %h1
+    %a{ name: "analytics" }
+    Analytics Settings
+
+  %form{ method: "post", action: "/admin/analytics" }
+    %p
+ 
+    %p
+      %label{ for: "gakey" }
+        Google Analytics Key:
+      %input{ type: "text", name: "gakey", id: "gakey", value: settings.gaKey }/
+
+    %p
+      %input{ type: "submit", value: "Save Analytics Settings" }/
+
+.gendiv
+
+  %h1
+    %a{ name: "password" }
     Password
 
   %form{ method: "post", action: "/admin/password" }

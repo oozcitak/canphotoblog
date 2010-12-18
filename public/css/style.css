@@ -152,8 +152,8 @@ body:before { content:""; height:100%; float:left; width:0; margin-top:-32767px;
 body { background: #1A1A1A url('../img/backgrounds/Wood Floor.jpg'); }
 #container { width: 750px; margin: 40px auto; text-align: center; }
 #header { background: #fff; color: #444; text-align: center;
-  opacity: 0.4; border-bottom: solid 5px #9eaaaf; font-size: 125%;
-  height: 60px; line-height: 60px; filter: alpha(opacity = 40); zoom: 1; }
+  opacity: 0.6; border-bottom: solid 5px #9eaaaf; font-size: 125%;
+  height: 60px; line-height: 60px; filter: alpha(opacity = 60); zoom: 1; }
 #header ul { list-style: none; display:inline; background: #000; color: #aaa;
   box-shadow: 2px 2px 15px #333; -moz-box-shadow: 2px 2px 15px #333; -webkit-box-shadow: 2px 2px 15px #333;
   -moz-border-radius: 4px; border-radius: 4px; padding: 4px 8px; margin: 0px 4px; }
@@ -162,8 +162,8 @@ body { background: #1A1A1A url('../img/backgrounds/Wood Floor.jpg'); }
 #header ul li.first:before { content: ""; }
 #header ul li a { color: #aaa; text-decoration: none; }
 #header ul li a:hover { color: #fff; }
-#footer { background: #fff; color: #444; text-align: center; font-size: 85%; opacity: 0.4; #9eaaaf;
-  filter: alpha(opacity = 40); zoom: 1; }
+#footer { background: #fff; color: #444; text-align: center; font-size: 85%; opacity: 0.6; #9eaaaf;
+  filter: alpha(opacity = 60); zoom: 1; }
 #footer .border { border-top: solid 5px #9eaaaf; position: absolute; width: 100%; top: 0px; left: 0px; }
 .gendiv { padding: 10px; background: #eee; border: solid 1px #fff;
   -webkit-box-shadow: 2px 2px 15px #333; -moz-box-shadow: 2px 2px 15px #333333;
@@ -177,8 +177,10 @@ input[type="text"], input[type="password"], select, textarea { border: 2px solid
 textarea { height: 200px; }
 input[type="button"], input[type="submit"] { background: #444; border: 1px solid #444; -moz-border-radius: 5px; 
   border-radius: 5px; color: white; display: block; float: left; margin-left: 204px; padding: 4px; }
-.error { background: #FEE; border: 1px solid #C44; color: #C22; font-weight: bold; }
-.info { background: #EFE; border: 1px solid #4C4; color: #2C2; font-weight: bold; }
+.error, .info { font-weight: bold; position: fixed; width: 100%; padding: 10px 0px; margin: 0px;
+  top: 0px; left: 0px; }
+.error { background: #FEE; border-bottom: 4px solid #C44; color: #C22; }
+.info { background: #EFE; border-bottom: 1px solid #4C4; color: #2C2; }
 h1 { margin: 0.5em 0px; }
 
 /* Comments */
