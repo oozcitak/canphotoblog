@@ -6,7 +6,7 @@ app = module.parent.exports
 app.error (err, req, res) ->
 
   res.render '500', {
-      layout: false,
+      layout: false
       locals: { message: err.message }
     }
 

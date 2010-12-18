@@ -176,6 +176,13 @@ app.configure () ->
         if fs.statSync(filename).isFile()
           require './controllers/' + path.basename(file, path.extname(file))
 
+      # if no routes match fall to 404
+      app.get '*', (req, res, next) ->
+        res.render '404', {
+            layout: false
+          }
+
+
       # dynamic view helpers
       app.dynamicHelpers {
 
