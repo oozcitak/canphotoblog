@@ -195,7 +195,16 @@ app.configure () ->
           return app.set('settings').gaKey
         settings: (req, res) ->
           return app.set('settings')
-
+        bgcolor: (req, res) ->
+          return app.set('settings').backgroundColor
+        bgimageurl: (req, res) ->
+          bgimage = app.set('settings').backgroundImage
+          if app.viewHelpers.album
+            return '../img/backgrounds/' + bgimage
+          else if app.viewHelpers.picture
+            return '../../img/backgrounds/' + bgimage
+          else
+            return '/img/backgrounds/' + bgimage
         # returns array of pagination objects
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
