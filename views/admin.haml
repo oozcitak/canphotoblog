@@ -88,6 +88,20 @@
 
   %form{ method: "post", action: "/admin/style" }
     %p
+      %label{ for: "style" }
+        Stylesheet:
+
+      %select{ name: "style", id: "style" }
+
+        :each css in styles
+          :if settings.style == css
+            %option{ value: css, selected: "selected" }
+              = css
+          :if settings.style != css
+            %option{ value: css }
+              = css
+
+    %p
       %label{ for: "bgcolor" }
         Background Color:
       %input{ type: "text", name: "bgcolor", id: "bgcolor", value: settings.backgroundColor }/

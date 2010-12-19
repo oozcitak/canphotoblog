@@ -139,7 +139,7 @@ button {  width: auto; overflow: visible; }
 .clearfix { zoom: 1; }
 
 /* Remove outline of focused form items */
-input { outline: none; }
+input, textarea, select { outline: none; }
 
 /* Sticky Footer */
 html, body { height: 100%; }

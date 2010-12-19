@@ -14,13 +14,28 @@ admin = new Admin db
 # GET /admin
 app.get '/admin', (req, res) ->
   if req.session.userid
-    admin.getBackgrounds app, (err, images) ->
-      res.render 'admin', {
-          locals: {
-            pagetitle: 'Blog Administration'
-            bgimages: images
+
+    step(
+
+      #read resources
+      () ->
+        admin.getStyles app, @parallel()
+        admin.getBackgrounds app, @parallel()
+        return undefined
+
+      # render page
+      (err, styles, images) ->
+        if err then throw err
+        res.render 'admin', {
+            locals: {
+              pagetitle: 'Blog Administration'
+              styles: styles
+              bgimages: images
+            }
           }
-        }
+
+    )
+
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
@@ -93,7 +108,7 @@ app.post '/admin/analytics', (req, res) ->
 # POST /admin/style
 app.post '/admin/style', (req, res) ->
   if req.session.userid
-    admin.changeStyle app, req.body.bgcolor, req.body.bgimage, (err) ->
+    admin.changeStyle app, req.body.style, req.body.bgcolor, req.body.bgimage, (err) ->
       if err then throw err
       req.flash 'info', 'Style settings saved.'
       res.redirect '/admin#style'

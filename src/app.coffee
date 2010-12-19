@@ -89,6 +89,7 @@ app.configure () ->
           'INSERT INTO "Settings" ("name", "value") VALUES ("monitorInterval", "1");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appName", "canphotoblog");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appTitle", "canphotoblog");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("style", "Polaroid.css");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundColor", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundImage", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("akismetKey", "");' +
@@ -195,6 +196,8 @@ app.configure () ->
           return app.set('settings').gaKey
         settings: (req, res) ->
           return app.set('settings')
+        stylesheet: (req, res) ->
+          return app.set('settings').style
         bgcolor: (req, res) ->
           return app.set('settings').backgroundColor
         bgimageurl: (req, res) ->

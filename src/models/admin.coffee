@@ -202,13 +202,47 @@ class Admin
     )
 
 
+  # Gets a list of styles
+  #
+  # app: the application object
+  # callback: err, array of image names
+  getStyles: (app, callback)->
+
+    dir = path.join app.set('settings').publicDir, 'css'
+    self = @
+
+    step(
+
+      # get folder contents
+      () ->
+        fs.readdir dir, @
+        return undefined
+
+      # execute callback
+      (err, fileNames) ->
+        if err then throw err
+
+        files = []
+        for fileName in fileNames
+          if path.extname(fileName).toLowerCase() is '.css'
+            if fileName.toLowerCase() isnt 'default.css'
+              files.push fileName
+        files.sort()
+ 
+        callback err, files
+
+    )
+
+
+
   # Saves and applies style settings
   #
   # app: the application object to apply settings to
+  # style: stylesheet
   # bgcolor: background color
   # bgimage: background image
   # callback err
-  changeStyle: (app, bgcolor, bgimage, callback) ->
+  changeStyle: (app, style, bgcolor, bgimage, callback) ->
 
     callback = cutil.ensureCallback callback
     self = @
@@ -218,11 +252,13 @@ class Admin
       # save settings
       () ->
         settings = app.set 'settings'
+        settings.style = style
         settings.backgroundColor = bgcolor
         settings.backgroundImage = bgimage
         app.set 'settings', settings
 
         group = @group()
+        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [style, 'style'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgcolor, 'backgroundColor'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgimage, 'backgroundImage'], group()
         return undefined
