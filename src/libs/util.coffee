@@ -97,6 +97,18 @@ module.exports = {
       return y + '-' + m + '-' + d
 
 
+  # Converts special characters to HTML entities
+  #
+  # str: the string to convert
+  escape: (str) ->
+    str or= ''
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/\x22/g, '&quot;')
+              .replace(/\x27/g, '&#039;')
+
+
   # Function to return the pagination. Converted from original
   # php version at
   # http://www.strangerstudios.com/sandbox/pagination/diggstyle.php

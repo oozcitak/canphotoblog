@@ -186,7 +186,7 @@ app.configure () ->
       app.helpers {
           # converts markdown to html
           parse: (mdtext) ->
-            return markdown.parse mdtext
+            return markdown.parse(cutil.escape(mdtext))
       }
 
       # dynamic view helpers
