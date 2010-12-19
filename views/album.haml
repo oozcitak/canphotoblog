@@ -5,7 +5,7 @@
 
   :if album.text
     %p
-      = album.text
+      = parse(album.text)
 
 
 %ul.gallery
@@ -67,7 +67,7 @@
         .from
           = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
         .text
-          = comment.text
+          = parse(comment.text)
 
 
 :if settings.allowComments

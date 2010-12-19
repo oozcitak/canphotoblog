@@ -20,7 +20,8 @@ body { background: #1A1A1A url('../img/backgrounds/Wood Floor.jpg'); }
 #footer .border { border-top: solid 5px #9eaaaf; position: absolute; width: 100%; top: 0px; left: 0px; }
 .gendiv { padding: 10px; background: #eee; border: solid 1px #fff;
   -webkit-box-shadow: 2px 2px 15px #333; -moz-box-shadow: 2px 2px 15px #333333;
-  box-shadow: 2px 2px 15px #333; text-align: center; margin: 40px 0px 10px; }
+  box-shadow: 2px 2px 15px #333; text-align: left; margin: 40px 0px 10px; }
+.gendiv h1 { text-align: center; }
 .gendiv p { margin: 6px 0px; overflow: hidden; }
 label { display: block; float: left; text-align: right; width: 200px; margin: 4px 4px 0px 0px; }
 form span { display: block; float: left; margin: 4px; }

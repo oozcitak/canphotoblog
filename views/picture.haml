@@ -21,7 +21,7 @@
 
   :if picture.text
     %p
-      = picture.text
+      = parse(picture.text)
 
 .clearfix
 
@@ -58,7 +58,7 @@
         .from
           = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
         .text
-          = comment.text
+          = parse(comment.text)
         .clearfix
 
 

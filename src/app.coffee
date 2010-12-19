@@ -6,6 +6,7 @@ url = require 'url'
 step = require 'step'
 akismet = require 'akismet'
 sqlite = require 'sqlite'
+markdown = require 'markdown-js'
 cutil = require './libs/util'
 
 
@@ -162,13 +163,12 @@ app.configure () ->
 
       # default controller
       app.get '*', (req, res, next) ->
-        app.helpers {
-          pageCount: 0
-          pagetitle: ''
-          pageCount: 0
-          album: null
-          picture: null
-        }
+        app.viewHelpers.pageCount = 0
+        app.viewHelpers.pagetitle = ''
+        app.viewHelpers.pageCount = 0
+        app.viewHelpers.album = null
+        app.viewHelpers.picture = null
+
         next()
 
       # include controllers
@@ -183,6 +183,11 @@ app.configure () ->
             layout: false
           }
 
+      app.helpers {
+          # converts markdown to html
+          parse: (mdtext) ->
+            return markdown.parse mdtext
+      }
 
       # dynamic view helpers
       app.dynamicHelpers {
@@ -208,6 +213,7 @@ app.configure () ->
             return '../../img/backgrounds/' + bgimage
           else
             return '/img/backgrounds/' + bgimage
+
         # returns array of pagination objects
         pagination: (req, res) ->
           pages = app.viewHelpers.pageCount
