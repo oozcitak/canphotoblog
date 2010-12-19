@@ -136,7 +136,7 @@ class Comments
     step(
 
       () ->
-        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Comments"', @
+        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0', @
         return undefined
 
       (err, rows) ->
@@ -160,6 +160,57 @@ class Comments
       # read comments
       () ->
         self.db.execute 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0 ORDER BY "dateCommented" DESC LIMIT ' +
+            (page - 1) * count + ',' + count, @
+        return undefined
+
+      # execute callback
+      (err, comments) ->
+        if err then throw err
+
+        for i in [0...comments.length]
+          comments[i].url = '/pictures/' + comments[i].album + '/' + comments[i].picture
+          comments[i].thumbnail = self.thumbURL comments[i].album, comments[i].picture
+          comments[i].src = '/albums/' + comments[i].album + '/' + comments[i].picture
+
+        callback err, comments
+    )
+
+
+  # Gets the count of spamcomments
+  #
+  # callback err, count
+  countSpamComments: (callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      () ->
+        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1', @
+        return undefined
+
+      (err, rows) ->
+        if err then throw err
+        callback err, rows[0].count
+    )
+
+
+  # Gets all pictures with spam comments starting at the given page
+  #
+  # page: starting page number, one-based
+  # count: number of pictures to return
+  # callback: err, array of comment objects
+  getSpamComments: (page, count, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # read comments
+      () ->
+        self.db.execute 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1 ORDER BY "dateCommented" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @
         return undefined
 

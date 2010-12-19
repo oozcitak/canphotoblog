@@ -1,6 +1,15 @@
 %ul.comments
   :each comment in comments
     %li
+      :if user
+        .button-box
+          %a.edit{ href: "/comments/edit/#{comment.id}" }
+          %a.delete{ href: "/comments/delete/#{comment.id}" }
+          :if comment.spam
+            %a.check{ href: "/comments/ham/#{comment.id}" }
+          :if !comment.spam
+            %a.flag{ href: "/comments/spam/#{comment.id}" }
+
       %a{ href: comment.url }
         %img{ alt: comment.picture, src: comment.thumbnail, title: comment.picture }/
       .from

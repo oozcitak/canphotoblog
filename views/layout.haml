@@ -47,6 +47,12 @@
               %a{ href: "/random" } 
                 Random
 
+          :if user
+            %ul
+              %li.first.admin
+                %a{ href: "/comments/spam" } 
+                  Spam Comments
+
         #container
           :if errorMessages
             .gendiv.error

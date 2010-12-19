@@ -10,26 +10,6 @@ Comments = require '../models/comments'
 comments = new Comments db, akismet
 
 
-# POST /comments/add
-app.post '/comments/add', (req, res) ->
-
-  if settings.allowComments
-    album = req.body.album
-    picture = req.body.picture or null
-    name = req.body.from
-    text = req.body.text
-
-    if picture
-      comments.addToPicture album, picture, name, text, req, (err) ->
-        res.redirect '/pictures/' + album + '/' + picture
-    else
-      comments.addToAlbum album, name, text, req, (err) ->
-        res.redirect '/albums/' + album
-  else
-    throw new Error('Comments not allowed.')
-    res.redirect '/'
-
-
 # GET /comments
 app.get '/comments', (req, res) ->
 
@@ -56,6 +36,59 @@ app.get '/comments', (req, res) ->
         }
 
   )
+
+
+# GET /comments/spam
+app.get '/comments/spam', (req, res) ->
+
+  if req.session.userid
+    page = req.query.page || 1
+
+    step(
+
+      # get commented albums
+      () ->
+        comments.getSpamComments page, settings.picturesPerPage, @parallel()
+        comments.countSpamComments @parallel()
+        return undefined
+
+      # render page
+      (err, comments, count) ->
+        if err then throw err
+
+        app.helpers { pageCount: Math.ceil(count / settings.picturesPerPage) }
+
+        res.render 'comments', {
+            locals: {
+              comments: comments
+            }
+          }
+
+    )
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /comments/add
+app.post '/comments/add', (req, res) ->
+
+  if settings.allowComments
+    album = req.body.album
+    picture = req.body.picture or null
+    name = req.body.from
+    text = req.body.text
+
+    if picture
+      comments.addToPicture album, picture, name, text, req, (err) ->
+        res.redirect '/pictures/' + album + '/' + picture
+    else
+      comments.addToAlbum album, name, text, req, (err) ->
+        res.redirect '/albums/' + album
+  else
+    throw new Error('Comments not allowed.')
+    res.redirect '/'
 
 
 # GET /comments/edit
