@@ -78,6 +78,10 @@ class Admin
         settings.thumbSize = thumbSize
         app.set 'settings', settings
 
+        monitor = app.set 'monitor'
+        monitor.thumbSize = thumbSize
+        monitor.restart()
+
         group = @group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [albumsPerPage, 'albumsPerPage'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [picturesPerPage, 'picturesPerPage'], group()
