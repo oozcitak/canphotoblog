@@ -41,7 +41,14 @@ class UploadMonitor
   # Stops watching the uploads folder
   stop: () ->
     if @timer then clearInterval @timer
+    timer = null
     util.log 'Upload monitor stopped.'
+
+
+  # Restarts the upload monitor
+  restart: () ->
+    @stop()
+    @start()
 
 
   # Processes the pictures in the uploads folder

@@ -38,6 +38,10 @@ class Admin
         settings.monitorInterval = monitorInterval
         app.set 'settings', settings
 
+        monitor = app.set 'monitor'
+        monitor.watchInterval = monitorInterval * 60 * 1000
+        monitor.restart()
+
         group = @group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appName, 'appName'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appTitle, 'appTitle'], group()
@@ -232,7 +236,6 @@ class Admin
         callback err, files
 
     )
-
 
 
   # Saves and applies style settings
