@@ -6,7 +6,7 @@ db = app.set 'db'
 settings = app.set 'settings'
 
 Albums = require '../models/albums'
-albums = new Albums db
+albums = new Albums db, settings.albumDir
 
 
 # GET /albums/album
@@ -46,6 +46,12 @@ app.post '/albums/edit', (req, res) ->
     album = req.body.album
     title = req.body.title
     text = req.body.text
+
+    if req.body.delete?
+      albums.delete album, (err) ->
+        if err then throw err
+        res.redirect '/'
+      return
 
     step(
 

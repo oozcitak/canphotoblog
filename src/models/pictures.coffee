@@ -11,6 +11,7 @@ class Pictures
   # Creates a new Pictures object
   #
   # db: database connection object
+  # albumDir: path to album directory
   constructor: (db, albumDir) ->
     @db = db
     @albumDir = albumDir
@@ -146,7 +147,7 @@ class Pictures
         group = @group()
         self.db.execute 'DELETE FROM "Comments" WHERE "album"=? and "picture"=?', [album, pic], group()
         self.db.execute 'DELETE FROM "Pictures" WHERE "album"=? and "name"=?', [album, pic], group()
-        fs.unlink path.join(self.albumDir, album, pic)
+        fs.unlink path.join(self.albumDir, album, pic), group()
         return undefined
       
       # execute callback

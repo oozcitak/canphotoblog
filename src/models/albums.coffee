@@ -1,3 +1,4 @@
+fs = require 'fs'
 step = require 'step'
 path = require 'path'
 cutil = require '../libs/util'
@@ -8,8 +9,10 @@ class Albums
   # Creates a new Albums object
   #
   # db: database connection object
-  constructor: (db) ->
+  # albumDir: path to album directory
+  constructor: (db, albumDir) ->
     @db = db
+    @albumDir = albumDir
 
 
   # Gets the album count
@@ -198,6 +201,46 @@ class Albums
       # edit album
       () ->
         self.db.execute 'UPDATE "Albums" SET "title"=?, "text"=? WHERE "name"=?', [title, text, album], @
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+  # Deletes an album and all contained pictures
+  #
+  # album: album name
+  # callback: err
+  delete: (album, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      #get all pictures
+      () ->
+        self.db.execute 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
+        return undefined
+
+      #delete pictures
+      (err, pics) ->
+        if err then throw err
+        group = @group()
+        self.db.execute 'DELETE FROM "Comments" WHERE "album"=?', [album], group()
+        self.db.execute 'DELETE FROM "Pictures" WHERE "album"=?', [album], group()
+        self.db.execute 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
+        for pic in pics
+          fs.unlink path.join(self.albumDir, album, pic.name), group()
+        return undefined
+
+      # delete album directory
+      (err) ->
+        if err then throw err
+        fs.rmdir path.join(self.albumDir, album), @
         return undefined
       
       # execute callback

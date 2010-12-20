@@ -172,8 +172,9 @@ app.post '/pictures/edit', (req, res) ->
       res.redirect '/pictures/move/' + album + '/' + picture
       return
     if req.body.delete?
-      pictures.delete album, picture
-      res.redirect '/albums/' + album
+      pictures.delete album, picture, (err) ->
+        if err then throw err
+        res.redirect '/albums/' + album
       return
 
     step(
