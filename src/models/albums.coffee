@@ -250,6 +250,70 @@ class Albums
     )
 
 
+  # Renames an album
+  #
+  # album: album name
+  # newname: new album name
+  # callback: err
+  rename: (album, newname, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # rename
+      () ->
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [newname, album], group()
+        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [newname, album], group()
+        self.db.execute 'UPDATE "Albums" SET "name"=? WHERE "name"=?', [newname, album], group()
+        fs.rename path.join(self.albumDir, album), path.join(self.albumDir, newname), group()
+        return undefined
+
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+  # Moves pictures in an album into another album
+  # Album comments are merged
+  #
+  # album: album name
+  # target: target album name
+  # callback: err
+  move: (album, target, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      #get all pictures
+      () ->
+        self.db.execute 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
+        return undefined
+
+      # rename
+      (err, pics) ->
+        if err then throw err
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [target, album], group()
+        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [target, album], group()
+        self.db.execute 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
+        for pic in pics
+          fs.rename path.join(self.albumDir, album, pic.name), path.join(self.albumDir, target, pic.name), group()
+        return undefined
+
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
   # Gets the thumbnail URL for the given picture
   thumbURL: (album, pic) ->
     return '/thumbs/' + album + '/' + path.basename(pic, path.extname(pic)) + '.png'

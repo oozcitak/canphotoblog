@@ -47,6 +47,12 @@ app.post '/albums/edit', (req, res) ->
     title = req.body.title
     text = req.body.text
 
+    if req.body.rename?
+      res.redirect '/albums/rename/' + album
+      return
+    if req.body.move?
+      res.redirect '/albums/move/' + album
+      return
     if req.body.delete?
       albums.delete album, (err) ->
         if err then throw err
@@ -70,4 +76,78 @@ app.post '/albums/edit', (req, res) ->
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
+
+
+# GET /albums/rename
+app.get '/albums/rename/:album', (req, res) ->
+
+  if req.session.userid
+
+    album = req.params.album
+
+    res.render 'renamealbum', {
+        locals: {
+          pagetitle: 'Rename Album'
+          albumname: album
+        }
+      }
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /albums/rename
+app.post '/albums/rename', (req, res) ->
+
+  if req.session.userid
+
+    album = req.body.album
+    target = req.body.target
+
+    albums.rename album, target, (err) ->
+      if err then throw err
+      res.redirect '/albums/' + target
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# GET /albums/move
+app.get '/albums/move/:album', (req, res) ->
+
+  if req.session.userid
+
+    album = req.params.album
+
+    res.render 'movealbum', {
+        locals: {
+          pagetitle: 'Move Album'
+          albumname: album
+        }
+      }
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /albums/move
+app.post '/albums/move', (req, res) ->
+
+  if req.session.userid
+
+    album = req.body.album
+    target = req.body.target
+
+    albums.move album, target, (err) ->
+      if err then throw err
+      res.redirect '/albums/' + target
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
 
