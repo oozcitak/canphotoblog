@@ -23,7 +23,8 @@
         minutes
 
     %p
-      %input{ type: "submit", value: "Save Application Settings" }/
+      %label{ for: "submitapp" }
+      %input{ type: "submit", name: "submitapp", id: "submitapp", value: "Save Application Settings" }/
 
 .gendiv
 
@@ -48,7 +49,8 @@
       %input{ type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize }/
 
     %p
-      %input{ type: "submit", value: "Save View Settings" }/
+      %label{ for: "submitview" }
+      %input{ type: "submit", name: "submitview", id: "submitview", value: "Save View Settings" }/
 
 .gendiv
 
@@ -78,7 +80,8 @@
       %input{ type: "text", name: "akismeturl", id: "akismeturl", value: settings.akismetURL }/
 
     %p
-      %input{ type: "submit", value: "Save Comment Settings" }/
+      %label{ for: "submitcomment" }
+      %input{ type: "submit", name: "submitcomment", id: "submitcomment", value: "Save Comment Settings" }/
 
 .gendiv
 
@@ -128,7 +131,8 @@
               = image
 
     %p
-      %input{ type: "submit", value: "Save Style Settings" }/
+      %label{ for: "submitstyle" }
+      %input{ type: "submit", name: "submitstyle", id: "submitstyle", value: "Save Style Settings" }/
 
 .gendiv
 
@@ -145,7 +149,8 @@
       %input{ type: "text", name: "gakey", id: "gakey", value: settings.gaKey }/
 
     %p
-      %input{ type: "submit", value: "Save Analytics Settings" }/
+      %label{ for: "submitanalytics" }
+      %input{ type: "submit", name: "submitanalytics", id: "submitanalytics", value: "Save Analytics Settings" }/
 
 .gendiv
 
@@ -160,5 +165,6 @@
       %input{ type: "password", name: "password", id: "password" }/
 
     %p
-      %input{ type: "submit", value: "Change Password" }/
+      %label{ for: "submitpassword" }
+      %input{ type: "submit", name: "submitpassword", id: "submitpassword", value: "Change Password" }/
 

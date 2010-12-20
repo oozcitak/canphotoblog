@@ -10,7 +10,7 @@ db = app.set 'db'
 settings = app.set 'settings'
 
 Pictures = require '../models/pictures'
-pictures = new Pictures db
+pictures = new Pictures db, settings.albumDir
 
 
 # GET /pictures/album/picture.ext
@@ -117,14 +117,64 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
   )
 
 
+# GET /pictures/move
+app.get '/pictures/move/:album/:picture.:ext', (req, res) ->
+
+  if req.session.userid
+
+    album = req.params.album
+    picture = req.params.picture + '.' + req.params.ext
+    thumb = '/thumbs/' + req.params.album + '/' + req.params.picture + '.png'
+
+    res.render 'movepicture', {
+        locals: {
+          pagetitle: 'Move Picture'
+          albumname: album
+          picturename: picture
+          thumb: thumb
+        }
+      }
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /pictures/move
+app.post '/pictures/move', (req, res) ->
+
+  if req.session.userid
+
+    album = req.body.album
+    picture = req.body.picture
+    target = req.body.target
+
+    pictures.move album, picture, target
+    res.redirect '/albums/' + album
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+
 # POST /pictures/edit
 app.post '/pictures/edit', (req, res) ->
 
   if req.session.userid
+
     album = req.body.album
     picture = req.body.picture
     title = req.body.title
     text = req.body.text
+
+    if req.body.move?
+      res.redirect '/pictures/move/' + album + '/' + picture
+      return
+    if req.body.delete?
+      pictures.delete album, picture
+      res.redirect '/albums/' + album
+      return
 
     step(
 

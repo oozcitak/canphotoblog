@@ -1,0 +1,24 @@
+.gendiv
+
+  %h1
+    Move Picture
+
+  %form{ method: "post", action: "/pictures/move" }
+
+    %input{ type: "hidden", name: "album", value: albumname }/
+    %input{ type: "hidden", name: "picture", value: picturename }/
+
+    %p
+      %label{ for: "thumb" }
+        Source Picture:
+      %img.thumb{ src: thumb }
+
+    %p
+      %label{ for: "target" }
+        Destination Album:
+      %input{ type: "text", name: "target", id: "target" }/
+
+    %p
+      %label{ for: "submit" }
+      %input{ type: "submit", name: "submit", id: "submit", value: "Move Picture" }/
+

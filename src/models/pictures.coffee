@@ -1,4 +1,4 @@
-app = module.parent.exports
+fs = require 'fs'
 step = require 'step'
 path = require 'path'
 util = require 'util'
@@ -11,8 +11,9 @@ class Pictures
   # Creates a new Pictures object
   #
   # db: database connection object
-  constructor: (db) ->
+  constructor: (db, albumDir) ->
     @db = db
+    @albumDir = albumDir
 
 
   # Gets the picture with the given name
@@ -119,6 +120,79 @@ class Pictures
       # edit picture
       () ->
         self.db.execute 'UPDATE "Pictures" SET "title"=?, "text"=? WHERE "album"=? AND "name"=?', [title, text, album, pic], @
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+  # Deletes a picture
+  #
+  # album: album name
+  # pic: picture name
+  # callback: err
+  delete: (album, pic, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # delete picture
+      () ->
+        group = @group()
+        self.db.execute 'DELETE FROM "Comments" WHERE "album"=? and "picture"=?', [album, pic], group()
+        self.db.execute 'DELETE FROM "Pictures" WHERE "album"=? and "name"=?', [album, pic], group()
+        fs.unlink path.join(self.albumDir, album, pic)
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+  # Moves a picture
+  #
+  # album: album name
+  # pic: picture name
+  # target: target album name
+  # callback: err
+  move: (album, pic, target, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+    
+      # check target dir
+      () ->
+        cutil.fileExists path.join(self.albumDir, target), @
+        return undefined
+
+      # create if not
+      (err, exists) ->
+        if err then throw err
+        if exists
+          return null
+        else
+          fs.mkdir path.join(self.albumDir, target), 0755, @parallel()
+          self.db.execute 'INSERT INTO "Albums" ("name", "dateCreated") 
+            SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM "Albums" WHERE "name"=?)',
+            [album, cutil.dateToSQLite(), album], @parallel()
+          return undefined
+
+      # move picture
+      (err) ->
+        if err then throw err
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
+        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
+        fs.rename path.join(self.albumDir, album, pic), path.join(self.albumDir, target, pic), group()
         return undefined
       
       # execute callback

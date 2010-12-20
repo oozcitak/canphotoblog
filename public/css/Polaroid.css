@@ -26,13 +26,13 @@ body { background: #1A1A1A url('../img/backgrounds/Wood Floor.jpg'); }
 label { display: block; float: left; text-align: right; width: 200px; margin: 4px 4px 0px 0px; }
 form span { display: block; float: left; margin: 4px; }
 input[type="checkbox"] { border: 2px solid #DADADA; display: block; float: left; padding: 2px; }
-input[type="text"], input[type="password"], select, textarea { border: 2px solid #DADADA; 
+input[type="text"], input[type="password"], select, textarea { border: 2px solid #DADADA;
   display: block; float: left; padding: 2px; width: 300px; }
 textarea { height: 200px; }
 input[type="button"], input[type="submit"] { background: #444; border: 1px solid #444; -moz-border-radius: 5px;
-  border-radius: 5px; color: white; display: block; float: left; margin-left: 204px; padding: 4px; }
-.error, .info { font-weight: bold; position: fixed; width: 100%; padding: 10px 0px; margin: 0px;
-  top: 0px; left: 0px; }
+  border-radius: 5px; color: white; display: block; float: left; margin-right: 6px; padding: 4px; }
+.error, .info { font-weight: bold; position: fixed; width: 100%; padding: 15px 0px; margin: 0px;
+  top: 0px; left: 0px; text-align: center; }
 .error { background: #FEE; border-bottom: 4px solid #C44; color: #C22; }
 .info { background: #EFE; border-bottom: 1px solid #4C4; color: #2C2; }
 h1 { margin: 0.5em 0px; }

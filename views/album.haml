@@ -49,7 +49,8 @@
           = album.text
 
       %p
-        %input{ type: "submit", value: "Save" }/
+        %label{ for: "submitalbum" }
+        %input{ type: "submit", name: "submitalbum", id: "submitalbum", value: "Save" }/
 
 
 :if album.comments.length
@@ -90,5 +91,6 @@
         %textarea{ name: "text", id: "text" }
 
       %p
-        %input{ type: "submit", value: "Post Comment" }/
+        %label{ for: "submitcomment" }
+        %input{ type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" }/
 
