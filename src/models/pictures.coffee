@@ -157,6 +157,35 @@ class Pictures
     )
 
 
+  # Renames a picture
+  #
+  # album: album name
+  # pic: picture name
+  # target: target picture name
+  # callback: err
+  rename: (album, pic, target, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+    
+      # rename picture
+      () ->
+        group = @group()
+        self.db.execute 'UPDATE "Comments" SET "picture"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
+        self.db.execute 'UPDATE "Pictures" SET "name"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
+        fs.rename path.join(self.albumDir, album, pic), path.join(self.albumDir, album, target), group()
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+
   # Moves a picture
   #
   # album: album name

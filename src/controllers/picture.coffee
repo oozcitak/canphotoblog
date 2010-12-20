@@ -117,6 +117,49 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
   )
 
 
+# GET /pictures/rename
+app.get '/pictures/rename/:album/:picture.:ext', (req, res) ->
+
+  if req.session.userid
+
+    album = req.params.album
+    picture = req.params.picture + '.' + req.params.ext
+    thumb = '/thumbs/' + req.params.album + '/' + req.params.picture + '.png'
+
+    res.render 'renamepicture', {
+        locals: {
+          pagetitle: 'Rename Picture'
+          albumname: album
+          picturename: picture
+          thumb: thumb
+        }
+      }
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# POST /pictures/rename
+app.post '/pictures/rename', (req, res) ->
+
+  if req.session.userid
+
+    album = req.body.album
+    picture = req.body.picture
+    target = req.body.target
+
+    target = path.basename(target, path.extname(target)) + '.jpg'
+
+    pictures.rename album, picture, target, (err) ->
+      if err then throw err
+      res.redirect '/pictures/' + album + '/' + target
+
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
 # GET /pictures/move
 app.get '/pictures/move/:album/:picture.:ext', (req, res) ->
 
@@ -149,13 +192,13 @@ app.post '/pictures/move', (req, res) ->
     picture = req.body.picture
     target = req.body.target
 
-    pictures.move album, picture, target
-    res.redirect '/albums/' + album
+    pictures.move album, picture, target, (err) ->
+      if err then throw err
+      res.redirect '/albums/' + album
 
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'
-
 
 
 # POST /pictures/edit
@@ -168,6 +211,9 @@ app.post '/pictures/edit', (req, res) ->
     title = req.body.title
     text = req.body.text
 
+    if req.body.rename?
+      res.redirect '/pictures/rename/' + album + '/' + picture
+      return
     if req.body.move?
       res.redirect '/pictures/move/' + album + '/' + picture
       return

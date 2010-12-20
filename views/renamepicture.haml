@@ -1,9 +1,9 @@
 .gendiv
 
   %h1
-    Move Picture
+    Rename Picture
 
-  %form{ method: "post", action: "/pictures/move" }
+  %form{ method: "post", action: "/pictures/rename" }
 
     %input{ type: "hidden", name: "album", value: albumname }/
     %input{ type: "hidden", name: "picture", value: picturename }/
@@ -15,15 +15,15 @@
 
     %p
       %label{for: "current" }
-        Current Album:
-      %input{ type: "text", name: "current", id: "current", value: albumname, disabled: "disabled" }/
+        Current Name:
+      %input{ type: "text", name: "current", id: "current", value: picturename, disabled: "disabled" }/
 
     %p
       %label{ for: "target" }
-        Destination Album:
+        New Name:
       %input{ type: "text", name: "target", id: "target" }/
 
     %p
       %label{ for: "submit" }
-      %input{ type: "submit", name: "submit", id: "submit", value: "Move Picture" }/
+      %input{ type: "submit", name: "submit", id: "submit", value: "Rename Picture" }/
 
