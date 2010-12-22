@@ -14,7 +14,7 @@ class UploadMonitor
   #
   # db: database connection object
   # albumDir: path to album directory
-  # thumbDir: paoh to ohumbnail directory
+  # thumbDir: path to thumbnail directory
   # uploadDir: path to uploads directory
   # thumbSize: size of generated thumbnails
   # watchInterval: time in milliseconds between new album checks
