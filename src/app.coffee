@@ -12,8 +12,8 @@ cutil = require './libs/util'
 
 
 # set the environment to production
-process.env.NODE_ENV = 'production'
-#process.env.NODE_ENV = 'development'
+#process.env.NODE_ENV = 'production'
+process.env.NODE_ENV = 'development'
 
 
 # Add :css filter to jade
@@ -21,14 +21,27 @@ jade.filters.css = (str) ->
   return '<style>' + str + '</style>'
 
 
-# Configure and start server
+# Configure server
 app = express.createServer()
+module.exports = app
+appRoot = path.dirname __dirname
+
+app.set 'settings', {
+    rootDir: appRoot
+    publicDir: path.join appRoot, 'public'
+    albumDir: path.join appRoot, 'public', 'albums'
+    thumbDir: path.join appRoot, 'public', 'thumbs'
+    uploadDir: path.join appRoot, 'uploads'
+    dbFile: path.join appRoot, 'album.sqlite'
+    akismetClient: null
+  }
 
 app.configure () ->
   app.use express.bodyDecoder()
   app.use express.cookieDecoder()
   app.use express.session()
   app.use express.logger()
+  app.use express.staticProvider(path.join(appRoot, 'public'))
 
 app.configure 'development', () ->
   app.use express.errorHandler {
@@ -39,33 +52,88 @@ app.configure 'development', () ->
 app.configure 'production', () ->
   app.use express.errorHandler()
 
-init = () ->
+# View engine
+app.set 'view engine', 'jade'
+app.set 'views', path.join(appRoot, 'views')
+
+# View helpers
+app.helpers {
+  # converts markdown to html
+  parse: (mdtext) ->
+    return markdown.parse(cutil.escape(mdtext))
+}
+
+# Dynamic view helpers
+app.dynamicHelpers {
+
+  # settings
+  appname: (req, res) ->
+    return app.set('settings').appName
+  apptitle: (req, res) ->
+    return app.set('settings').appTitle
+  gakey: (req, res) ->
+    return app.set('settings').gaKey
+  settings: (req, res) ->
+    return app.set('settings')
+  stylesheet: (req, res) ->
+    return app.set('settings').style
+  appurl: (req, res) ->
+    parts = { protocol: 'http:', host: req.headers.host }
+    return url.format(parts)
+
+  # background settings
+  bgcolor: (req, res) ->
+    return app.set('settings').backgroundColor
+  bgimageurl: (req, res) ->
+    bgimage = app.set('settings').backgroundImage
+    if app.viewHelpers.album
+      return '../img/backgrounds/' + bgimage
+    else if app.viewHelpers.picture
+      return '../../img/backgrounds/' + bgimage
+    else
+      return '/img/backgrounds/' + bgimage
+
+  # returns array of pagination objects
+  pagination: (req, res) ->
+    pages = app.viewHelpers.pageCount
+    if pages <= 1
+      return null
+    else
+      return cutil.getPagination req.url, pages
+
+  # returns an array of error messages
+  errorMessages: (req, res) ->
+    msg = req.flash 'error'
+    if not msg or msg.length is 0 then msg = null
+    return msg
+
+  # returns an array of info messages
+  infoMessages: (req, res) ->
+    msg = req.flash 'info'
+    if not msg or msg.length is 0 then msg = null
+    return msg
+
+  # gets the logged in user
+  user: (req, res) ->
+    userid = if req.session.userid then req.session.userid else null
+    user = app.set 'user'
+    if user and user.id is userid then return user else return null
+
+}
+
+
+# Initializes the application
+init = (callback) ->
+
+  callback = cutil.ensureCallback callback
   dbexists = true
   db = null
-  settings = {}
+  settings = app.set 'settings'
 
   step(
 
-    # settings
+    # check database
     () ->
-      appRoot = path.dirname __dirname
-
-      # express settings
-      app.set 'view engine', 'jade'
-      app.set 'views', path.join(appRoot, 'views')
-
-      # settings
-      settings = {
-        rootDir: appRoot
-        publicDir: path.join appRoot, 'public'
-        albumDir: path.join appRoot, 'public', 'albums'
-        thumbDir: path.join appRoot, 'public', 'thumbs'
-        uploadDir: path.join appRoot, 'uploads'
-        dbFile: path.join appRoot, 'album.sqlite'
-        akismetClient: null
-      }
-
-      # check database
       cutil.fileExists settings.dbFile, @
       return undefined
 
@@ -180,102 +248,40 @@ init = () ->
       monitor.start()
       app.set 'monitor', monitor
 
-      # default controller
-      app.get '*', (req, res, next) ->
-        app.viewHelpers.pageCount = 0
-        app.viewHelpers.pagetitle = ''
-        app.viewHelpers.album = null
-        app.viewHelpers.picture = null
+      # Stop upload monitor on exit
+      process.on 'exit', () ->
+        monitor.stop()
 
-        next()
-
-      # include controllers
-      for file in fs.readdirSync path.join(__dirname, 'controllers')
-        filename = path.join __dirname, 'controllers', file
-        if fs.statSync(filename).isFile()
-          require './controllers/' + path.basename(file, path.extname(file))
-
-      # if no routes match fall to 404
-      app.get '*', (req, res, next) ->
-        res.render '404', {
-            layout: false
-          }
-
-      app.helpers {
-          # converts markdown to html
-          parse: (mdtext) ->
-            return markdown.parse(cutil.escape(mdtext))
-      }
-
-      # dynamic view helpers
-      app.dynamicHelpers {
-
-        # settings
-        appname: (req, res) ->
-          return app.set('settings').appName
-        apptitle: (req, res) ->
-          return app.set('settings').appTitle
-        gakey: (req, res) ->
-          return app.set('settings').gaKey
-        settings: (req, res) ->
-          return app.set('settings')
-        stylesheet: (req, res) ->
-          return app.set('settings').style
-        appurl: (req, res) ->
-          parts = { protocol: 'http:', host: req.headers.host }
-          return url.format(parts)
-        bgcolor: (req, res) ->
-          return app.set('settings').backgroundColor
-        bgimageurl: (req, res) ->
-          bgimage = app.set('settings').backgroundImage
-          if app.viewHelpers.album
-            return '../img/backgrounds/' + bgimage
-          else if app.viewHelpers.picture
-            return '../../img/backgrounds/' + bgimage
-          else
-            return '/img/backgrounds/' + bgimage
-
-        # returns array of pagination objects
-        pagination: (req, res) ->
-          pages = app.viewHelpers.pageCount
-          if pages <= 1
-            return null
-          else
-            return cutil.getPagination req.url, pages
-
-        # returns an array of error messages
-        errorMessages: (req, res) ->
-          msg = req.flash 'error'
-          if not msg or msg.length is 0 then msg = null
-          return msg
-
-        # returns an array of info messages
-        infoMessages: (req, res) ->
-          msg = req.flash 'info'
-          if not msg or msg.length is 0 then msg = null
-          return msg
-
-        # gets the logged in user
-        user: (req, res) ->
-          userid = if req.session.userid then req.session.userid else null
-          user = app.set 'user'
-          if user and user.id is userid then return user else return null
-
-      }
-
-      # start listening
-      app.listen 8124
-      util.log 'Application started.'
+      # execute callback
+      callback err
   )
 
-# call init routine
-init()
 
-# clean-up
-process.on 'exit', () ->
-  monitor = app.set 'monitor'
-  if monitor then monitor.stop()
+# Call init routine
+init (err) ->
+  if err then throw err
 
+  # Default controller
+  app.get '*', (req, res, next) ->
+    app.viewHelpers.pageCount = 0
+    app.viewHelpers.pagetitle = ''
+    app.viewHelpers.album = null
+    app.viewHelpers.picture = null
+    next()
 
-module.exports = app
+  # Include controllers
+  for file in fs.readdirSync path.join(__dirname, 'controllers')
+    filename = path.join __dirname, 'controllers', file
+    if fs.statSync(filename).isFile()
+      require filename # './controllers/' + path.basename(file, path.extname(file))
+
+  # If no routes match fall to 404
+  app.get '*', (req, res, next) ->
+    res.render '404', {
+        layout: false
+      }
+
+  # start listening
+  app.listen 8124
+  util.log 'Application started.'
 

@@ -62,8 +62,8 @@ app.get '/random', (req, res) ->
 
 # GET /thumbs/album/picture.ext
 # Create the thumbnail on first request. Subsequent
-# requests should be served by nginx with the thumbnail
-# generated here.
+# requests should be served by static provider with
+# the thumbnail generated here.
 app.get '/thumbs/:album/:picture.:ext', (req, res) ->
 
   album = req.params.album
