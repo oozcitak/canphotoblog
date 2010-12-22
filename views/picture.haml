@@ -17,7 +17,8 @@
         %img{ alt: picture.next.displayName, src: picture.next.thumbnail, title: picture.next.displayName }/
   %h1
     = picture.displayName 
-    = ' (' + picture.dateTaken + ')'
+    :if picture.dateTaken
+      = ' (' + picture.dateTaken + ')'
 
   :if picture.text
     %p

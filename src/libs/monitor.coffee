@@ -94,7 +94,12 @@ class UploadMonitor
         for album in albums
           self.db.execute albumSQL, [album, cutil.dateToSQLite(), album], group()
         for pic in pictures
-          self.db.execute pictureSQL, [pic.name, cutil.dateToSQLite(pic.dateTaken), pic.album, pic.name, pic.album], group()
+          picdate = ''
+          if pic.dateTaken
+            picdate = cutil.dateToSQLite(pic.dateTaken)
+          else if pic.dateModified
+            picdate = cutil.dateToSQLite(pic.dateModified)
+          self.db.execute pictureSQL, [pic.name, picdate, pic.album, pic.name, pic.album], group()
 
         return undefined
 
@@ -275,6 +280,7 @@ class UploadMonitor
         if err then throw err
         if not dates or dates.length isnt pictures.length then throw new Error('Error reading picture dates from file system.')
         for i in [0...dates.length]
+          if isNaN(dates[i].getTime()) then dates[i] = null
           pictures[i].dateTaken = dates[i]
 
         callback err, pictures
