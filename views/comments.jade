@@ -1,3 +1,16 @@
+- if (user)
+  .gendiv
+    h1 Comment Administration
+    p 
+      | Show 
+      a( href: "/comments" ) non-spam
+      | comments only.
+
+    p 
+      | Show 
+      a( href: "/comments/spam" ) spam
+      | comments only.
+
 ul.comments
   - each comment in comments
     li
