@@ -21,9 +21,10 @@ class Admin
   # app: the application object to apply settings to
   # appName: application name
   # appTitle: application title
+  # appAuthor: application author
   # monitorInterval: interval between upload monitor checks
   # callback: err
-  changeAppSettings: (app, appName, appTitle, monitorInterval, callback) ->
+  changeAppSettings: (app, appName, appTitle, appAuthor, monitorInterval, callback) ->
 
     callback = cutil.ensureCallback callback
     self = @
@@ -35,6 +36,7 @@ class Admin
         settings = app.set 'settings'
         settings.appName = appName
         settings.appTitle = appTitle
+        settings.appAuthor = appAuthor
         settings.monitorInterval = monitorInterval
         app.set 'settings', settings
 
@@ -45,6 +47,7 @@ class Admin
         group = @group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appName, 'appName'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appTitle, 'appTitle'], group()
+        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appAuthor, 'appAuthor'], group()
         self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [monitorInterval, 'monitorInterval'], group()
         return undefined
 

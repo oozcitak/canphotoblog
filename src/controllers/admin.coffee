@@ -46,9 +46,10 @@ app.post '/admin/app', (req, res) ->
   if req.session.userid
     appName = req.body.name
     appTitle = req.body.title
+    appAuthor = req.body.author
     monitorInterval = parseInt req.body.monitorinterval
 
-    admin.changeAppSettings app, appName, appTitle, monitorInterval, (err) ->
+    admin.changeAppSettings app, appName, appTitle, appAuthor, monitorInterval, (err) ->
       if err then throw err
       req.flash 'info', 'Application settings saved.'
       res.redirect '/admin#app'

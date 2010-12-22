@@ -16,6 +16,11 @@
       %input{ type: "text", name: "title", id: "title", value: settings.appTitle }/
 
     %p
+      %label{ for: "author" }
+        Author Name:
+      %input{ type: "text", name: "author", id: "author", value: settings.appAuthor }/
+
+    %p
       %label{ for: "monitorinterval" }
         Check for Uploads Every:
       %input{ type: "text", name: "monitorinterval", id: "monitorinterval", value: settings.monitorInterval }/

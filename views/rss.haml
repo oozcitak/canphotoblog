@@ -1,0 +1,22 @@
+!!! xml
+%feed{ xmlns: "http://www.w3.org/2005/Atom" }
+  %title= apptitle
+  %link{ href: appurl }
+  %link{ href: rssurl, rel: "self" }
+  %author
+    %name= author
+  %updated= rsstime
+  %id= appurl + ':rss/'
+
+  :each album in albums
+    %entry
+      %title= album.displayName
+      %link{ href: album.url }
+      %id= appurl + ':albums' + ':' + album.name + '/'
+      %author
+        %name= author
+      %published= album.dateCreated
+      %updated= album.dateCreated
+      :if album.text
+        = parse(album.text)
+

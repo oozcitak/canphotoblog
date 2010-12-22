@@ -90,6 +90,7 @@ app.configure () ->
           'INSERT INTO "Settings" ("name", "value") VALUES ("monitorInterval", "1");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appName", "canphotoblog");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("appTitle", "canphotoblog");' +
+          'INSERT INTO "Settings" ("name", "value") VALUES ("appAuthor", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("style", "Polaroid.css");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundColor", "");' +
           'INSERT INTO "Settings" ("name", "value") VALUES ("backgroundImage", "");' +
@@ -165,7 +166,6 @@ app.configure () ->
       app.get '*', (req, res, next) ->
         app.viewHelpers.pageCount = 0
         app.viewHelpers.pagetitle = ''
-        app.viewHelpers.pageCount = 0
         app.viewHelpers.album = null
         app.viewHelpers.picture = null
 
@@ -203,6 +203,9 @@ app.configure () ->
           return app.set('settings')
         stylesheet: (req, res) ->
           return app.set('settings').style
+        appurl: (req, res) ->
+          parts = { protocol: 'http:', host: req.headers.host }
+          return url.format(parts)
         bgcolor: (req, res) ->
           return app.set('settings').backgroundColor
         bgimageurl: (req, res) ->

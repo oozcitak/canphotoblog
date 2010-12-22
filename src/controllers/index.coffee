@@ -7,7 +7,7 @@ db = app.set 'db'
 settings = app.set 'settings'
 
 Albums = require '../models/albums'
-albums = new Albums db
+albums = new Albums db, settings.albumDir
 
 
 # GET /

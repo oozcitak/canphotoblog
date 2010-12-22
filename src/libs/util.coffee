@@ -72,7 +72,7 @@ module.exports = {
   # Converts a Date object to sqlite date string formatted as
   # YYYY-MM-DD HH:MM:SS.
   #
-  # date: a date object, default to current date/time
+  # date: a date object, defaults to current date/time
   # time: true to include time, defaults to true
   dateToSQLite: (date, time) ->
     if not date then date = new Date()
@@ -95,6 +95,29 @@ module.exports = {
       return y + '-' + m + '-' + d + ' ' + hh + ':' + mm + ':' + ss
     else
       return y + '-' + m + '-' + d
+
+
+  # Converts a Date object to atom date string formatted as
+  # YYYY-MM-DDTHH:MM:SSZ0000.
+  #
+  # date: a date object, defaults to current date/time
+  dateToAtom: (date) ->
+    if not date then date = new Date()
+
+    y = date.getFullYear()
+    m = date.getMonth() + 1
+    d = date.getDate()
+    hh = date.getHours()
+    mm = date.getMinutes()
+    ss = date.getSeconds()
+
+    if m < 10 then m = '0' + m
+    if d < 10 then d = '0' + d
+    if hh < 10 then hh = '0' + hh
+    if mm < 10 then mm = '0' + mm
+    if ss < 10 then ss = '0' + ss
+
+    return y + '-' + m + '-' + d + 'T' + hh + ':' + mm + ':' + ss + 'Z'
 
 
   # Converts special characters to HTML entities

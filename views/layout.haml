@@ -86,21 +86,25 @@
       .border
 
       powered by 
-      %a{ href: "//github.com/oozcitak/canphotoblog" }
+      %a.source{ href: "//github.com/oozcitak/canphotoblog" }
         canphotoblog
 
       :if user
         &nbsp;|&nbsp;
-        %a{ href: "/admin" }
+        %a.admin{ href: "/admin" }
           admin
         &nbsp;|&nbsp;
-        %a{ href: "/logout" }
+        %a.admin{ href: "/logout" }
           logout
 
       :if !user
         &nbsp;|&nbsp;
-        %a{ href: "/login" }
+        %a.admin{ href: "/login" }
           login
+
+      &nbsp;|&nbsp;
+      %a.rss{ href: "/rss" }
+        rss
 
     %script{ src: "//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js" }/
     :javascript
