@@ -12,6 +12,7 @@
       :if pagetitle
         = ' | ' + pagetitle
 
+    %link{ rel: "alternate", href: "/rss", type: "application/atom+xml", title: "Recent albums" }/
     %link{ rel: "stylesheet", href: "/css/default.css" }/
     %link{ rel: "stylesheet", href: "/css/#{stylesheet}" }/
     %script{ src: "/js/libs/modernizr-1.6.min.js" }
