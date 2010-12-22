@@ -7,17 +7,39 @@ step = require 'step'
 akismet = require 'akismet'
 sqlite = require 'sqlite'
 markdown = require 'markdown-js'
+jade = require 'jade'
 cutil = require './libs/util'
 
 
 # set the environment to production
-process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'production'
+#process.env.NODE_ENV = 'development'
+
+
+# Add :css filter to jade
+jade.filters.css = (str) ->
+  return '<style>' + str + '</style>'
 
 
 # Configure and start server
 app = express.createServer()
-app.configure () ->
 
+app.configure () ->
+  app.use express.bodyDecoder()
+  app.use express.cookieDecoder()
+  app.use express.session()
+  app.use express.logger()
+
+app.configure 'development', () ->
+  app.use express.errorHandler {
+      dumpExceptions: true
+      showStack: true
+    }
+
+app.configure 'production', () ->
+  app.use express.errorHandler()
+
+init = () ->
   dbexists = true
   db = null
   settings = {}
@@ -29,12 +51,8 @@ app.configure () ->
       appRoot = path.dirname __dirname
 
       # express settings
-      app.set 'view engine', 'haml'
+      app.set 'view engine', 'jade'
       app.set 'views', path.join(appRoot, 'views')
-
-      app.use express.bodyDecoder()
-      app.use express.cookieDecoder()
-      app.use express.session()
 
       # settings
       settings = {
@@ -250,6 +268,8 @@ app.configure () ->
       util.log 'Application started.'
   )
 
+# call init routine
+init()
 
 # clean-up
 process.on 'exit', () ->
