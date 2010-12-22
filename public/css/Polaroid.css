@@ -56,9 +56,9 @@ ul.comments li:nth-child(11n) { position: relative; top: 2px; }
 /* Albums */
 ul.gallery { list-style: none; margin: 0px; }
 .thumb { position: relative; float: left; padding: 10px; background: #eee;
-  border: solid 1px #fff; margin: 4px; width: 150px; height: 150px;
+  border: solid 1px #fff; margin: 4px; text-align: center;
   -webkit-box-shadow: 2px 2px 15px #333; -moz-box-shadow: 2px 2px 15px #333;
-  box-shadow: 2px 2px 15px #333; text-align: center; }
+  box-shadow: 2px 2px 15px #333; }
 .album { height: 180px; }
 .thumb-info, .thumb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thumb-info { font-size: 85%; color: # 444; }
