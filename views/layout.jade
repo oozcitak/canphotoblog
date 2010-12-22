@@ -1,126 +1,110 @@
 !!! 5
-%html.no-js{ lang: "en" }
-  %head
-    %meta{ charset: "utf-8" }/
-    %meta{ http-equiv: "X-UA-Compatible", content: "IE=edge,chrome=1" }/
-    %meta{ name: "description", content: "" }/
-    %meta{ name: "author", content: "" }/
-    %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0" }/
+html.no-js( lang: "en" )
+  head
+    meta( charset: "utf-8" )
+    meta( http-equiv: "X-UA-Compatible", content: "IE=edge,chrome=1" )
+    meta( name: "description", content: "" )
+    meta( name: "author", content: "" )
+    meta( name: "viewport", content: "width=device-width, initial-scale=1.0" )
 
-    %title
-      = apptitle
-      :if pagetitle
-        = ' | ' + pagetitle
+    title
+      - if (pagetitle)
+        = apptitle + ' | ' + pagetitle
+      - else
+        = apptitle
 
-    %link{ rel: "alternate", href: "/rss", type: "application/atom+xml", title: "Recent albums" }/
-    %link{ rel: "stylesheet", href: "/css/default.css" }/
-    %link{ rel: "stylesheet", href: "/css/#{stylesheet}" }/
-    %script{ src: "/js/libs/modernizr-1.6.min.js" }
+    link( rel: "alternate", href: "/rss", type: "application/atom+xml", title: "Recent albums" )
+    link( rel: "stylesheet", href: "/css/default.css" )
+    link( rel: "stylesheet", href: "/css/" + stylesheet )
+    script( src: "/js/libs/modernizr-1.6.min.js" )
 
-  %body{ style: "background: #{bgcolor} url('#{bgimageurl}')" }
+  body( style: "background: " + bgcolor + " url('" + bgimageurl + "')" )
 
     #wrap
       #main
 
         #header
-          %ul
-            %li.first
-              %a{ href: "/" }
-                = apptitle
-            :if album
-              %li
-                %a{ href: album.url } 
-                  = album.name
-            :if picture
-              %li
-                %a{ href: picture.album.url } 
-                  = picture.album.name
-              %li
-                %a{ href: picture.url } 
-                  = picture.name
+          ul
+            li.first
+              a( href: "/" )= apptitle
+            - if (album)
+              li
+                a( href: album.url )= album.name
+            - if (picture)
+              li
+                a( href: picture.album.url )= picture.album.name
+              li
+                a( href: picture.url )= picture.name
 
-          %ul
-            %li.first
-              %a{ href: "/comments" }
-                Comments
-          %ul
-            %li.first
-              %a{ href: "/random" } 
-                Random
+          ul
+            li.first
+              a( href: "/comments" ) Comments
+          ul
+            li.first
+              a( href: "/random" ) Random
 
-          :if user
-            %ul
-              %li.first.admin
-                %a{ href: "/comments/spam" } 
-                  Spam Comments
+          - if (user)
+            ul
+              li.first.admin
+                a( href: "/comments/spam" ) Spam Comments
 
         #container
-          :if errorMessages
+          - if (errorMessages)
             .gendiv.error
-              :each msg in errorMessages
-                %p
-                  = msg
-          :if infoMessages
+              - each msg in errorMessages
+                p= msg
+          - if (infoMessages)
             .gendiv.info
-              :each msg in infoMessages
-                %p
-                  = msg
+              - each msg in infoMessages
+                p= msg
 
-          = body
+          != body
           .clearfix
 
-        :if pagination
+        - if (pagination)
           .pagination
-            :each page in pagination
-              :if !page.islink
-                :if page.current
-                  %span.current{ class: page.classname }
-                    = page.text
-                :if !page.current
-                  %span{ class: page.classname }
-                    = page.text
-              :if page.islink
-                %a{ href: page.url, class: page.classname }
-                  = page.text
+            - each page in pagination
+              - if (!page.islink)
+                - if (page.current)
+                  span.current( class: page.classname )= page.text
+                - else
+                  span( class: page.classname )= page.text
+              - else
+                a( href: page.url, class: page.classname )= page.text
 
     #footer
       .border
 
       powered by 
-      %a.source{ href: "//github.com/oozcitak/canphotoblog" }
-        canphotoblog
+      a.source( href: "//github.com/oozcitak/canphotoblog" ) canphotoblog
 
-      :if user
-        &nbsp;|&nbsp;
-        %a.admin{ href: "/admin" }
-          admin
-        &nbsp;|&nbsp;
-        %a.admin{ href: "/logout" }
-          logout
+      - if (user)
+        span &nbsp;|&nbsp;
+        a.admin( href: "/admin" ) admin
+        span &nbsp;|&nbsp;
+        a.admin( href: "/logout" ) logout
 
-      :if !user
-        &nbsp;|&nbsp;
-        %a.admin{ href: "/login" }
-          login
+      - else
+        span &nbsp;|&nbsp;
+        a.admin( href: "/login" ) login
 
-      &nbsp;|&nbsp;
-      %a.rss{ href: "/rss" }
-        rss
+      span &nbsp;|&nbsp;
+      a.rss( href: "/rss" ) rss
 
-    %script{ src: "//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js" }/
+    script( src: "//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js" )
     :javascript
-      !window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))
-    %script{ src: "/js/plugins.js" }
-    %script{ src: "/js/script.js" }
+      | !window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))
+    script( src: "/js/plugins.js" )
+    script( src: "/js/script.js" )
 
-    :if gakey
+    - if (gakey)
       :javascript
-        var _gaq = [['_setAccount', '#{gakey}'], ['_trackPageview']];
-         (function(d, t) {
-          var g = d.createElement(t),
-              s = d.getElementsByTagName(t)[0];
-          g.async = true;
-          g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          s.parentNode.insertBefore(g, s);
-         })(document, 'script');
+        | var _gaq = [['_setAccount', '#{gakey}'], ['_trackPageview']];
+        |  (function(d, t) {
+        |   var g = d.createElement(t),
+        |       s = d.getElementsByTagName(t)[0];
+        |   g.async = true;
+        |   g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        |   s.parentNode.insertBefore(g, s);
+        |  })(document, 'script');
 

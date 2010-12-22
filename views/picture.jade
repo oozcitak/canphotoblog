@@ -1,93 +1,86 @@
 .pic
 
-  :if picture.prev
+  - if (picture.prev)
     .prev
-      %a{ href: picture.prev.url }
-        %img{ alt: picture.prev.displayName, src: picture.prev.thumbnail, title: picture.prev.displayName }/
+      a( href: picture.prev.url )
+        img( alt: picture.prev.displayName, src: picture.prev.thumbnail, title: picture.prev.displayName )
 
-  :if picture.next
-    %a{ href: picture.next.url }
-      %img.img{ alt: picture.displayName, src: picture.src, title: picture.displayName }/
-  :if !picture.next
-    %img.img{ alt: picture.displayName, src: picture.src, title: picture.displayName }/
+  - if (picture.next)
+    a( href: picture.next.url )
+      img.img( alt: picture.displayName, src: picture.src, title: picture.displayName )
+  - else
+    img.img( alt: picture.displayName, src: picture.src, title: picture.displayName )
 
-  :if picture.next
+  - if (picture.next)
     .next
-      %a{ href: picture.next.url }
-        %img{ alt: picture.next.displayName, src: picture.next.thumbnail, title: picture.next.displayName }/
-  %h1
-    = picture.displayName 
-    :if picture.dateTaken
-      = ' (' + picture.dateTaken + ')'
+      a( href: picture.next.url )
+        img( alt: picture.next.displayName, src: picture.next.thumbnail, title: picture.next.displayName )
+  h1
+    - if (picture.dateTaken)
+      = picture.displayName + ' (' + picture.dateTaken + ')'
+    - else
+      = picture.displayName
 
-  :if picture.text
-    %p
-      = parse(picture.text)
+  - if (picture.text)
+    p
+      != parse(picture.text)
 
 .clearfix
 
 
-:if user
+- if (user)
   .gendiv
 
-    %h1
-      Edit Picture
+    h1 Edit Picture
 
-    %form{ method: "post", action: "/pictures/edit" }
-      %input{ type: "hidden", name: "album", value: picture.album.name }/
-      %input{ type: "hidden", name: "picture", value: picture.name }/
+    form( method: "post", action: "/pictures/edit" )
+      input( type: "hidden", name: "album", value: picture.album.name )
+      input( type: "hidden", name: "picture", value: picture.name )
 
-      %p
-        %label{ for: "title" }
-          Picture Title:
-        %input{ type: "text", name: "title", id: "title", value: picture.title }/
+      p
+        label( for: "title" ) Picture Title:
+        input( type: "text", name: "title", id: "title", value: picture.title )
 
-      %p
-        %label{ for: "text" }
-          Picture Text:
-        %textarea{ name: "text", id: "text" }
-          = picture.text
+      p
+        label( for: "text" ) Picture Text:
+        textarea( name: "text", id: "text" )= picture.text
 
-      %p
-        %label{ for: "submitpicture" }
-        %input{ type: "submit", name: "submitpicture", id: "submitpicture", value: "Save" }/
-        %input{ type: "submit", name: "rename", id: "rename", value: "Rename Picture" }/
-        %input{ type: "submit", name: "move", id: "move", value: "Move Picture" }/
-        %input{ type: "submit", name: "delete", id: "delete", value: "Delete Picture" }/
+      p
+        label( for: "submitpicture" )
+        input( type: "submit", name: "submitpicture", id: "submitpicture", value: "Save" )
+        input( type: "submit", name: "rename", id: "rename", value: "Rename Picture" )
+        input( type: "submit", name: "move", id: "move", value: "Move Picture" )
+        input( type: "submit", name: "delete", id: "delete", value: "Delete Picture" )
 
 
-:if picture.comments.length
-  %ul.comments
-    :each comment in picture.comments
-      %li
-        .from
-          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
+- if (picture.comments.length)
+  ul.comments
+    - each comment in picture.comments
+      li
+        .from= comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
         .text
-          = parse(comment.text)
+          != parse(comment.text)
         .clearfix
 
 
-:if settings.allowComments
+- if (settings.allowComments)
   .gendiv
 
-    %h1
-      Add Comment
+    h1 Add Comment
 
-    %form{ method: "post", action: "/comments/add" }
-      %input{ type: "hidden", name: "album", value: picture.album.name }/
-      %input{ type: "hidden", name: "picture", value: picture.name }/
+    form( method: "post", action: "/comments/add" )
+      input( type: "hidden", name: "album", value: picture.album.name )
+      input( type: "hidden", name: "picture", value: picture.name )
 
-      %p
-        %label{ for: "from" }
-          From:
-        %input{ type: "text", name: "from", id: "from" }/
+      p
+        label( for: "from" ) From:
+        input( type: "text", name: "from", id: "from" )
 
-      %p
-        %label{ for: "text" }
-          Comment:
-        %textarea{ name: "text", id: "text" }
+      p
+        label( for: "text" ) Comment:
+        textarea( name: "text", id: "text" )
 
-      %p
-        %label{ for: "submitcomment" }
-        %input{ type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" }/
+      p
+        label( for: "submitcomment" )
+        input( type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" )
 

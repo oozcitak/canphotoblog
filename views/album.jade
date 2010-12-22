@@ -1,99 +1,87 @@
 .gendiv
 
-  %h1
-    = album.displayName
+  h1= album.displayName
 
-  :if album.text
-    %p
-      = parse(album.text)
+  - if (album.text)
+    p
+      != parse(album.text)
 
 
-%ul.gallery
-  :each picture in album.pictures
-    %li
-      :if picture.comments
+ul.gallery
+  - each picture in album.pictures
+    li
+      - if (picture.comments)
         .thumb.album.commented
           .thumb-pic
-            %a{ href: picture.url }
-              %img{ alt: picture.displayName, src: picture.thumbnail, title: picture.displayName }/
-          .thumb-name
-            = picture.displayName
-      :if !picture.comments
+            a( href: picture.url )
+              img( alt: picture.displayName, src: picture.thumbnail, title: picture.displayName )
+          .thumb-name= picture.displayName
+      - else
         .thumb.album
           .thumb-pic
-            %a{ href: picture.url }
-              %img{ alt: picture.displayName, src: picture.thumbnail, title: picture.displayName }/
-          .thumb-name
-            = picture.displayName
+            a( href: picture.url )
+              img( alt: picture.displayName, src: picture.thumbnail, title: picture.displayName )
+          .thumb-name= picture.displayName
 
 .clearfix
 
-:if user
+- if (user)
   .gendiv
 
-    %h1
+    h1
       Edit Album
 
-    %form{ method: "post", action: "/albums/edit" }
-      %input{ type: "hidden", name: "album", value: album.name }/
+    form( method: "post", action: "/albums/edit" )
+      input( type: "hidden", name: "album", value: album.name )
 
-      %p
-        %label{ for: "title" }
-          Album Title:
-        %input{ type: "text", name: "title", id: "title", value: album.title }/
+      p
+        label( for: "title" ) Album Title:
+        input( type: "text", name: "title", id: "title", value: album.title )
 
-      %p
-        %label{ for: "text" }
-          Album Text:
-        %textarea{ name: "text", id: "text" }
-          = album.text
+      p
+        label( for: "text" ) Album Text:
+        textarea( name: "text", id: "text" )= album.text
 
-      %p
-        %label{ for: "submitalbum" }
-        %input{ type: "submit", name: "submitalbum", id: "submitalbum", value: "Save" }/
-        %input{ type: "submit", name: "rename", id: "rename", value: "Rename Album" }/
-        %input{ type: "submit", name: "move", id: "move", value: "Move Pictures" }/
-        %input{ type: "submit", name: "delete", id: "delete", value: "Delete Album" }/
+      p
+        label( for: "submitalbum" )
+        input( type: "submit", name: "submitalbum", id: "submitalbum", value: "Save" )
+        input( type: "submit", name: "rename", id: "rename", value: "Rename Album" )
+        input( type: "submit", name: "move", id: "move", value: "Move Pictures" )
+        input( type: "submit", name: "delete", id: "delete", value: "Delete Album" )
 
 
-:if album.comments.length
-  %ul.comments
-    :each comment in album.comments
-      %li
-        :if user
+- if (album.comments.length)
+  ul.comments
+    - each comment in album.comments
+      li
+        - if (user)
           .button-box
-            %a.edit{ href: '/comments/edit/' + comment.id, title: 'edit' }
-              &nbsp;
-            %a.delete{ href: '/comments/delete/' + comment.id, title: 'delete' }
-              &nbsp;
-            %a.flag{ href: '/comments/spam/' + comment.id, title: 'mark as spam' }
-              &nbsp;
-        .from
-          = comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
+            a.edit( href: '/comments/edit/' + comment.id, title: 'edit' ) &nbsp;
+            a.delete( href: '/comments/delete/' + comment.id, title: 'delete' ) &nbsp;
+            a.flag( href: '/comments/spam/' + comment.id, title: 'mark as spam' ) &nbsp;
+        .from= comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
         .text
-          = parse(comment.text)
+          != parse(comment.text)
 
 
-:if settings.allowComments
+- if (settings.allowComments)
   .gendiv
 
-    %h1
+    h1
       Add Comment
 
-    %form{ method: "post", action: "/comments/add" }
-      %input{ type: "hidden", name: "album", value: album.name }/
+    form( method: "post", action: "/comments/add" )
+      input( type: "hidden", name: "album", value: album.name )
 
-      %p
-        %label{ for: "from" }
-          From:
-        %input{ type: "text", name: "from", id: "from" }/
+      p
+        label( for: "from" ) From:
+        input( type: "text", name: "from", id: "from" )
 
-      %p
-        %label{ for: "text" }
-          Comment:
-        %textarea{ name: "text", id: "text" }
+      p
+        label( for: "text" ) Comment:
+        textarea( name: "text", id: "text" )
 
-      %p
-        %label{ for: "submitcomment" }
-        %input{ type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" }/
+      p
+        label( for: "submitcomment" )
+        input( type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" )
 

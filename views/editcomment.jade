@@ -1,22 +1,18 @@
 .gendiv
 
-  %h1
-    Edit Comment
+  h1 Edit Comment
 
-  %form{ method: "post", action: "/comments/edit/" + comment.id }
+  form( method: "post", action: "/comments/edit/" + comment.id )
 
-      %p
-        %label{ for: "name" }
-          From:
-        %input{ type: "text", name: "name", id: "name", value: comment.from }/
+    p
+      label( for: "name" ) From:
+      input( type: "text", name: "name", id: "name", value: comment.from )
 
-      %p
-        %label{ for: "text" }
-          Text:
-        %textarea{ name: "text", id: "text" }
-          = comment.text
+    p
+      label( for: "text" ) Text:
+      textarea( name: "text", id: "text" )= comment.text
 
-      %p
-        %label{ for: "submit" }
-        %input{ type: "submit", name: "submit", id: "submit", value: "Save" }/
+    p
+      label( for: "submit" )
+      input( type: "submit", name: "submit", id: "submit", value: "Save" )
 

@@ -1,175 +1,145 @@
 .gendiv
 
-  %h1
-    %a{ name: "app" }
-    Application Settings
+  h1
+    a( name: "app" ) Application Settings
 
-  %form{ method: "post", action: "/admin/app" }
-    %p
-      %label{ for: "name" }
-        Application Name:
-      %input{ type: "text", name: "name", id: "name", value: settings.appName }/
+  form( method: "post", action: "/admin/app" )
+    p
+      label( for: "name" ) Application Name:
+      input( type: "text", name: "name", id: "name", value: settings.appName )
 
-    %p
-      %label{ for: "title" }
-        Application Title:
-      %input{ type: "text", name: "title", id: "title", value: settings.appTitle }/
+    p
+      label( for: "title" ) Application Title:
+      input( type: "text", name: "title", id: "title", value: settings.appTitle )
 
-    %p
-      %label{ for: "author" }
-        Author Name:
-      %input{ type: "text", name: "author", id: "author", value: settings.appAuthor }/
+    p
+      label( for: "author" ) Author Name:
+      input( type: "text", name: "author", id: "author", value: settings.appAuthor )
 
-    %p
-      %label{ for: "monitorinterval" }
-        Check for Uploads Every:
-      %input{ type: "text", name: "monitorinterval", id: "monitorinterval", value: settings.monitorInterval }/
-      %span
-        minutes
+    p
+      label( for: "monitorinterval" ) Check for Uploads Every:
+      input( type: "text", name: "monitorinterval", id: "monitorinterval", value: settings.monitorInterval )
+      span minutes
 
-    %p
-      %label{ for: "submitapp" }
-      %input{ type: "submit", name: "submitapp", id: "submitapp", value: "Save Application Settings" }/
+    p
+      label( for: "submitapp" )
+      input( type: "submit", name: "submitapp", id: "submitapp", value: "Save Application Settings" )
 
 .gendiv
 
-  %h1
-    %a{ name: "view" }
-    View Settings
+  h1
+    a( name: "view" ) View Settings
 
-  %form{ method: "post", action: "/admin/view" }
-    %p
-      %label{ for: "albums" }
-        Albums Per Page:
-      %input{ type: "text", name: "albums", id: "albums", value: settings.albumsPerPage }/
+  form( method: "post", action: "/admin/view" )
+    p
+      label( for: "albums" ) Albums Per Page:
+      input( type: "text", name: "albums", id: "albums", value: settings.albumsPerPage )
 
-    %p
-      %label{ for: "pictures" }
-        Pictures Per Page:
-      %input{ type: "text", name: "pictures", id: "pictures", value: settings.picturesPerPage }/
+    p
+      label( for: "pictures" ) Pictures Per Page:
+      input( type: "text", name: "pictures", id: "pictures", value: settings.picturesPerPage )
 
-    %p
-      %label{ for: "thumbsize" }
-        Thumbnail Size:
-      %input{ type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize }/
+    p
+      label( for: "thumbsize" ) Thumbnail Size:
+      input( type: "text", name: "thumbsize", id: "thumbsize", value: settings.thumbSize )
 
-    %p
-      %label{ for: "submitview" }
-      %input{ type: "submit", name: "submitview", id: "submitview", value: "Save View Settings" }/
+    p
+      label( for: "submitview" )
+      input( type: "submit", name: "submitview", id: "submitview", value: "Save View Settings" )
 
 .gendiv
 
-  %h1
-    %a{ name: "comments" }
+  h1
+    a( name: "comments" )
     Comment Settings
 
-  %form{ method: "post", action: "/admin/comments" }
-    %p
+  form( method: "post", action: "/admin/comments" )
  
-    %p
-      %label{ for: "allowcomments" }
-        Allow Comments:
-      :if settings.allowComments
-        %input{ type: "checkbox", name: "allowcomments", id: "allowcomments", checked: true }/
-      :if !settings.allowComments
-        %input{ type: "checkbox", name: "allowcomments", id: "allowcomments" }/
+    p
+      label( for: "allowcomments" ) Allow Comments:
+      - if (settings.allowComments)
+        input( type: "checkbox", name: "allowcomments", id: "allowcomments", checked: true )
+      - else
+        input( type: "checkbox", name: "allowcomments", id: "allowcomments" )
 
-    %p
-      %label{ for: "akismetkey" }
-        Akismet Key:
-      %input{ type: "text", name: "akismetkey", id: "akismetkey", value: settings.akismetKey }/
+    p
+      label( for: "akismetkey" ) Akismet Key:
+      input( type: "text", name: "akismetkey", id: "akismetkey", value: settings.akismetKey )
 
-    %p
-      %label{ for: "akismeturl" }
-        Blog URL for Akismet:
-      %input{ type: "text", name: "akismeturl", id: "akismeturl", value: settings.akismetURL }/
+    p
+      label( for: "akismeturl" ) Blog URL for Akismet:
+      input( type: "text", name: "akismeturl", id: "akismeturl", value: settings.akismetURL )
 
-    %p
-      %label{ for: "submitcomment" }
-      %input{ type: "submit", name: "submitcomment", id: "submitcomment", value: "Save Comment Settings" }/
+    p
+      label( for: "submitcomment" )
+      input( type: "submit", name: "submitcomment", id: "submitcomment", value: "Save Comment Settings" )
 
 .gendiv
 
-  %h1
-    %a{ name: "style" }
-    Style
+  h1
+    a( name: "style" ) Style
 
-  %form{ method: "post", action: "/admin/style" }
-    %p
-      %label{ for: "style" }
-        Stylesheet:
+  form( method: "post", action: "/admin/style" )
 
-      %select{ name: "style", id: "style" }
+    p
+      label( for: "style" ) Stylesheet:
+      select( name: "style", id: "style" )
 
-        :each css in styles
-          :if settings.style == css
-            %option{ value: css, selected: "selected" }
-              = css
-          :if settings.style != css
-            %option{ value: css }
-              = css
+        - each css in styles
+          - if (settings.style == css)
+            option( value: css, selected: "selected" )= css
+          - else
+            option( value: css )= css
 
-    %p
-      %label{ for: "bgcolor" }
-        Background Color:
-      %input{ type: "text", name: "bgcolor", id: "bgcolor", value: settings.backgroundColor }/
+    p
+      label( for: "bgcolor" ) Background Color:
+      input( type: "text", name: "bgcolor", id: "bgcolor", value: settings.backgroundColor )
 
-    %p
-      %label{ for: "bgimage" }
-        Background Image:
+    p
+      label( for: "bgimage" ) Background Image:
+      select( name: "bgimage", id: "bgimage" )
 
-      %select{ name: "bgimage", id: "bgimage" }
+        - if (!settings.backgroundImage || (settings.backgroundImage == 'None'))
+          option( value: 'None', selected: "selected" ) None
+        - else
+          option( value: 'None' ) None
 
-        :if !settings.backgroundImage || settings.backgroundImage == 'None'
-          %option{ value: 'None', selected: "selected" }
-            None
-        :if settings.backgroundImage && settings.backgroundImage != 'None'
-          %option{ value: 'None' }
-            None
+        - each image in bgimages
+          - if (settings.backgroundImage == image)
+            option( value: image, selected: "selected" )= image
+          - else
+            option( value: image )= image
 
-        :each image in bgimages
-          :if settings.backgroundImage == image
-            %option{ value: image, selected: "selected" }
-              = image
-          :if settings.backgroundImage != image
-            %option{ value: image }
-              = image
-
-    %p
-      %label{ for: "submitstyle" }
-      %input{ type: "submit", name: "submitstyle", id: "submitstyle", value: "Save Style Settings" }/
+    p
+      label( for: "submitstyle" )
+      input( type: "submit", name: "submitstyle", id: "submitstyle", value: "Save Style Settings" )
 
 .gendiv
 
-  %h1
-    %a{ name: "analytics" }
-    Analytics Settings
+  h1
+    a( name: "analytics" ) Analytics Settings
 
-  %form{ method: "post", action: "/admin/analytics" }
-    %p
+  form( method: "post", action: "/admin/analytics" )
  
-    %p
-      %label{ for: "gakey" }
-        Google Analytics Key:
-      %input{ type: "text", name: "gakey", id: "gakey", value: settings.gaKey }/
+    p
+      label( for: "gakey" ) Google Analytics Key:
+      input( type: "text", name: "gakey", id: "gakey", value: settings.gaKey )
 
-    %p
-      %label{ for: "submitanalytics" }
-      %input{ type: "submit", name: "submitanalytics", id: "submitanalytics", value: "Save Analytics Settings" }/
+    p
+      label( for: "submitanalytics" )
+      input( type: "submit", name: "submitanalytics", id: "submitanalytics", value: "Save Analytics Settings" )
 
 .gendiv
 
-  %h1
-    %a{ name: "password" }
-    Password
+  h1
+    a( name: "password" ) Password
 
-  %form{ method: "post", action: "/admin/password" }
-    %p
-      %label{ for: "password" }
-        Admin Password:
-      %input{ type: "password", name: "password", id: "password" }/
+  form( method: "post", action: "/admin/password" )
+    p
+      label( for: "password" ) Admin Password:
+      input( type: "password", name: "password", id: "password" )
 
-    %p
-      %label{ for: "submitpassword" }
-      %input{ type: "submit", name: "submitpassword", id: "submitpassword", value: "Change Password" }/
+    p
+      label( for: "submitpassword" )
+      input( type: "submit", name: "submitpassword", id: "submitpassword", value: "Change Password" )
 

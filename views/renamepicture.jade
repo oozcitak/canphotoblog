@@ -1,29 +1,25 @@
 .gendiv
 
-  %h1
-    Rename Picture
+  h1 Rename Picture
 
-  %form{ method: "post", action: "/pictures/rename" }
+  form( method: "post", action: "/pictures/rename" )
 
-    %input{ type: "hidden", name: "album", value: albumname }/
-    %input{ type: "hidden", name: "picture", value: picturename }/
+    input( type: "hidden", name: "album", value: albumname )
+    input( type: "hidden", name: "picture", value: picturename )
 
-    %p
-      %label{ for: "thumb" }
-        Source Picture:
-      %img.thumb{ src: thumb }
+    p
+      label( for: "thumb" ) Source Picture:
+      img.thumb( src: thumb )
 
-    %p
-      %label{for: "current" }
-        Current Name:
-      %input{ type: "text", name: "current", id: "current", value: picturename, disabled: "disabled" }/
+    p
+      label(for: "current" ) Current Name:
+      input( type: "text", name: "current", id: "current", value: picturename, disabled: "disabled" )
 
-    %p
-      %label{ for: "target" }
-        New Name:
-      %input{ type: "text", name: "target", id: "target" }/
+    p
+      label( for: "target" ) New Name:
+      input( type: "text", name: "target", id: "target" )
 
-    %p
-      %label{ for: "submit" }
-      %input{ type: "submit", name: "submit", id: "submit", value: "Rename Picture" }/
+    p
+      label( for: "submit" )
+      input( type: "submit", name: "submit", id: "submit", value: "Rename Picture" )
 

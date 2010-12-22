@@ -1,29 +1,25 @@
 .gendiv
 
-  %h1
-    Move Picture
+  h1 Move Picture
 
-  %form{ method: "post", action: "/pictures/move" }
+  form( method: "post", action: "/pictures/move" )
 
-    %input{ type: "hidden", name: "album", value: albumname }/
-    %input{ type: "hidden", name: "picture", value: picturename }/
+    input( type: "hidden", name: "album", value: albumname )
+    input( type: "hidden", name: "picture", value: picturename )
 
-    %p
-      %label{ for: "thumb" }
-        Source Picture:
-      %img.thumb{ src: thumb }
+    p
+      label( for: "thumb" ) Source Picture:
+      img.thumb( src: thumb )
 
-    %p
-      %label{for: "current" }
-        Current Album:
-      %input{ type: "text", name: "current", id: "current", value: albumname, disabled: "disabled" }/
+    p
+      label(for: "current" ) Current Album:
+      input( type: "text", name: "current", id: "current", value: albumname, disabled: "disabled" )
 
-    %p
-      %label{ for: "target" }
-        Destination Album:
-      %input{ type: "text", name: "target", id: "target" }/
+    p
+      label( for: "target" ) Destination Album:
+      input( type: "text", name: "target", id: "target" )
 
-    %p
-      %label{ for: "submit" }
-      %input{ type: "submit", name: "submit", id: "submit", value: "Move Picture" }/
+    p
+      label( for: "submit" )
+      input( type: "submit", name: "submit", id: "submit", value: "Move Picture" )
 

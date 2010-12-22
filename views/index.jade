@@ -1,22 +1,18 @@
-%ul.gallery
-  :each album in albums
-    %li
-      :if album.comments
+ul.gallery
+  - each album in albums
+    li
+      - if (album.comments)
         .thumb.album.commented
           .thumb-pic
-            %a{ href: album.url }
-              %img{ alt: album.displayName, src: album.thumbnail, title: album.displayName }/
-          .thumb-name
-            = album.displayName
-          .thumb-info
-            = album.count + ' pictures'
-      :if !album.comments
+            a( href: album.url )
+              img( alt: album.displayName, src: album.thumbnail, title: album.displayName )
+          .thumb-name= album.displayName
+          .thumb-info= album.count + ' pictures'
+      - else
         .thumb.album
           .thumb-pic
-            %a{ href: album.url }
-              %img{ alt: album.displayName, src: album.thumbnail, title: album.displayName }/
-          .thumb-name
-            = album.displayName
-          .thumb-info
-            = album.count + ' pictures'
+            a( href: album.url )
+              img( alt: album.displayName, src: album.thumbnail, title: album.displayName )
+          .thumb-name= album.displayName
+          .thumb-info= album.count + ' pictures'
 
