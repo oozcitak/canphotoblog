@@ -10,41 +10,14 @@ First off, install `node.js` and `nginx` with your favorite package manager or b
     npm install akismet
     npm install sqlite
 
-The idea is to have `nginx` serve images and `node.js` generate dynamic pages. Let's go ahead and do this. Edit your `nginx` configuration file for your site; it should look like this:
-
-    server
-    {
-      listen 80;
-      server_name canhpotoblog;
-      root /path/to/canphotoblog/public/;
-
-      location /
-      {
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-NginX-Proxy true;
-        proxy_redirect off;
-
-        if (-f $request_filename)
-        {
-          expires max;
-          break;
-        }
-
-        if (!-f $request_filename)
-        {
-          proxy_pass http://127.0.0.1:8124;
-          break;
-        }
-      }
-    }
-
 Let us now clone the `canphotoblog` repository and build it:
 
     git clone git://github.com/oozcitak/canphotoblog.git
     cd canphotoblog
     make
+
+You can run the application with:
+
     node lib/app.js
 
 Great! Your new photo blog is now running. (You will want to add this to a startup script to make sure the application is started when the server is rebooted.) Although the application is running there aren't any pictures to look at. Let's fix this next.
@@ -59,4 +32,4 @@ You will see a `login` link at the footer of the application. Click this and log
 
 ### Credits:
 
-The polaroid look and css effects are stolen from [Polaroids with CSS3](http://www.zurb.com/playground/css3-polaroids).
+The polaroid look and css effects are from [Polaroids with CSS3](http://www.zurb.com/playground/css3-polaroids).
