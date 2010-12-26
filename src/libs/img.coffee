@@ -1,7 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 step = require 'step'
-im = require '../libs/imagemagick'
+im = require './imagemagick'
 cutil = require './util'
 
 
