@@ -24,7 +24,7 @@
   "dependencies" : { 
     "express" : ">=1.0.0",
     "step" : ">=0.0.3",
-    "akismet" : ">=0.0.2",
+    "akismet" : ">=0.0.5",
     "sqlite" : ">=0.0.6",
     "markdown-js" : ">=0.0.3",
     "jade" : ">=0.6.0"
