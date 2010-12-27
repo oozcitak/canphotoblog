@@ -1,7 +1,7 @@
 util = require 'util'
 step = require 'step'
 
-app = module.parent.exports
+app = module.parent.exports.expressApp
 db = app.set 'db'
 akismet = app.set 'akismet'
 settings = app.set 'settings'

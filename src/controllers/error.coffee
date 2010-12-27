@@ -1,6 +1,6 @@
 util = require 'util'
 
-app = module.parent.exports
+app = module.parent.exports.expressApp
 
 # Errors
 app.error (err, req, res) ->

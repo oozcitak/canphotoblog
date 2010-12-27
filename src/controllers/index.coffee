@@ -2,7 +2,7 @@ util = require 'util'
 path = require 'path'
 step = require 'step'
 
-app = module.parent.exports
+app = module.parent.exports.expressApp
 db = app.set 'db'
 settings = app.set 'settings'
 
