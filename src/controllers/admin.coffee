@@ -8,7 +8,7 @@ settings = app.set 'settings'
 Users = require '../models/users'
 users = new Users db
 Admin = require '../models/admin'
-admin = new Admin db
+admin = new Admin db, settings.albumDir, settings.thumbDir, settings.thumbSize
 
 
 # GET /admin
@@ -64,6 +64,10 @@ app.post '/admin/view', (req, res) ->
     albumsPerPage = parseInt req.body.albums
     picturesPerPage = parseInt req.body.pictures
     thumbSize = parseInt req.body.thumbsize
+
+    if req.body.rebuildthumbs?
+      res.redirect '/admin/rebuildthumbs/'
+      return
 
     admin.changeViewSettings app, albumsPerPage, picturesPerPage, thumbSize, (err) ->
       if err then throw err
@@ -125,6 +129,26 @@ app.post '/admin/password', (req, res) ->
       if err then throw err
       req.flash 'info', 'Password changed.'
       res.redirect '/admin#password'
+  else
+    req.flash 'error', 'Access denied.'
+    res.redirect '/login'
+
+
+# GET /admin/rebuildthumbs
+app.get '/admin/rebuildthumbs', (req, res) ->
+  if req.session.userid
+    admin.rebuildThumbs()
+
+    admin.emitter.on 'progress', (percent) ->
+      req.flash 'info', 'Rebuilding thumbnails... ' + percent + '% completed.'
+      util.log 'Rebuilding thumbnails... ' + percent + '% completed.'
+
+    admin.emitter.on 'complete', (err) ->
+      if err then throw err
+      req.flash 'info', 'Completed rebuilding thumbnails.'
+
+    req.flash 'info', 'Rebuilding thumbnails...'
+    res.redirect '/admin#view'
   else
     req.flash 'error', 'Access denied.'
     res.redirect '/login'

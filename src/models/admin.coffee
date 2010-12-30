@@ -1,9 +1,11 @@
 util = require 'util'
 fs = require 'fs'
+events = require 'events'
 path = require 'path'
 step = require 'step'
 akismet = require 'akismet'
 cutil = require '../libs/util'
+im = require '../libs/img'
 
 
 class Admin
@@ -12,8 +14,15 @@ class Admin
   # Creates a new Admin object
   #
   # db: database connection object
-  constructor: (db) ->
+  # albumDir: path to album directory
+  # thumbDir: path to thumbnail directory
+  # thumbSize: size of generated thumbnails
+  constructor: (db, albumDir, thumbDir, thumbSize) ->
     @db = db
+    @albumDir = albumDir
+    @thumbDir =  thumbDir
+    @thumbSize = thumbSize
+    @emitter = new events.EventEmitter()
 
 
   # Saves and applies settings
@@ -251,7 +260,7 @@ class Admin
   # style: stylesheet
   # bgcolor: background color
   # bgimage: background image
-  # callback err
+  # callback: err
   changeStyle: (app, style, bgcolor, bgimage, callback) ->
 
     callback = cutil.ensureCallback callback
@@ -276,6 +285,53 @@ class Admin
       # execute callback
       (err) ->
         if err then throw err
+        callback err
+
+    )
+
+
+  # Rebuilds all thumbnails.
+  # Emits an 'complete' event once all
+  # thumbnails are processed.
+  #
+  # callback: err
+  rebuildThumbs: (callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # read pictures
+      () ->
+        self.db.execute 'SELECT "album", "name" FROM "Pictures"', @
+        return undefined
+
+      # make thumbnails
+      (err, rows) ->
+        if err then throw err
+        if rows.length is 0 then return null
+        total = rows.length
+        count = 0
+        group =  @group()
+        for row in rows
+          album = row.album
+          ext = path.extname row.name
+          name = path.basename row.name, ext
+          src = path.join(self.albumDir, album, name + ext)
+          dst = path.join(self.thumbDir, album, name + '.png')
+          im.makeThumbnail src, dst, self.thumbSize, group()
+
+          count++
+          percent = Math.round(count / total)
+          self.emitter.emit 'progress', percent
+
+        return undefined
+
+      # execute callback and emit event
+      (err) ->
+        if err then throw err
+        self.emitter.emit 'complete', err
         callback err
 
     )
