@@ -18,3 +18,7 @@ test: dev
 	@echo 'Running application...'
 	@test `which node` || echo 'You need to have node.js installed.'
 	@node lib/app.js
+
+publish: dev
+	@echo 'Publishing npm package...'
+	@npm publish

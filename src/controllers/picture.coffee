@@ -5,7 +5,7 @@ step = require 'step'
 im = require '../libs/img'
 cutil = require '../libs/util'
 
-app = module.parent.exports
+app = module.parent.exports.expressApp
 db = app.set 'db'
 settings = app.set 'settings'
 

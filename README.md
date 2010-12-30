@@ -3,14 +3,11 @@ Licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.
 
 ### Installation:
 
-First off, install `node.js` and `nginx` with your favorite package manager or build them from source. You will also need `imagemagick` and `sqlite3` installed. Then install the following node.js packages:
+You will need `imagemagick` and `sqlite3` installed. You will also need the following node.js packages:
 
-    npm install coffee-script
-    npm install step
-    npm install akismet
-    npm install sqlite
+    npm install coffee-script express step akismet sqlite markdown-js jade
 
-Let us now clone the `canphotoblog` repository and build it:
+Now clone the `canphotoblog` repository and build it:
 
     git clone git://github.com/oozcitak/canphotoblog.git
     cd canphotoblog
@@ -18,7 +15,7 @@ Let us now clone the `canphotoblog` repository and build it:
 
 You can run the application with:
 
-    node lib/app.js
+    node run.js
 
 Great! Your new photo blog is now running. (You will want to add this to a startup script to make sure the application is started when the server is rebooted.) Although the application is running there aren't any pictures to look at. Let's fix this next.
 
@@ -33,3 +30,4 @@ You will see a `login` link at the footer of the application. Click this and log
 ### Credits:
 
 The polaroid look and css effects are from [Polaroids with CSS3](http://www.zurb.com/playground/css3-polaroids).
+
