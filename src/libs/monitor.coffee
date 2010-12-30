@@ -57,7 +57,6 @@ class UploadMonitor
     self = @
     if self.readingAlbums then return
     self.readingAlbums = true
-    util.log 'Checking for new uploads.'
     albums = []
     pictures = []
 
@@ -181,9 +180,7 @@ class UploadMonitor
       (err) ->
         if err then throw err
         self.readingAlbums = false
-        if pictures.length is 0
-          util.log 'No new uploads.'
-        else
+        if pictures.length isnt 0
           util.log 'Read ' + pictures.length + ' new pictures from uploads.'
     )
 
