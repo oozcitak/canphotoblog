@@ -81,6 +81,31 @@ class Pictures
     )
 
 
+  # Finds the picture with the given name
+  #
+  # album: album name
+  # pic: picture name
+  # callback: err, { name, album } object
+  findPicture: (album, pic, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # get picture
+      () ->
+        self.db.execute 'SELECT "name", "album" FROM "Pictures" WHERE "album"=? AND "name" LIKE ? LIMIT 1', [album, pic + '%'], @
+        return undefined
+      
+      # return picture
+      (err, rows) ->
+        if err then throw err
+        callback err, rows[0]
+
+    )
+
+
   # Gets a random picture
   #
   # callback: err, { name, album } object

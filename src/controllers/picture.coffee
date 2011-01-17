@@ -74,8 +74,17 @@ app.get '/thumbs/:album/:picture.:ext', (req, res) ->
 
   step(
 
-    # check source
+    # check database
     () ->
+      pictures.findPicture album, picture, @
+      return undefined
+
+    # check source
+    (err, pic) ->
+      if err then throw err
+      if not pic then throw new Error('Picture not found:' + album + '/' + picture + '.' + ext)
+
+      source = path.join settings.albumDir, pic.album, pic.name
       cutil.fileExists source, @
       return undefined
 
