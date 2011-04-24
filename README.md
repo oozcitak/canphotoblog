@@ -5,17 +5,23 @@ Licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.
 
 You will need `imagemagick` and `sqlite3` installed. You will also need the following node.js packages:
 
-    npm install coffee-script express step akismet sqlite markdown-js jade
+``` sh
+npm install coffee-script express step akismet sqlite markdown-js jade
+```
 
 Now clone the `canphotoblog` repository and build it:
 
-    git clone git://github.com/oozcitak/canphotoblog.git
-    cd canphotoblog
-    make
+``` sh
+git clone git://github.com/oozcitak/canphotoblog.git
+cd canphotoblog
+make
+```
 
 You can run the application with:
 
-    node run.js
+``` sh
+node run.js
+```
 
 Great! Your new photo blog is now running. (You will want to add this to a startup script to make sure the application is started when the server is rebooted.) Although the application is running there aren't any pictures to look at. Let's fix this next.
 
