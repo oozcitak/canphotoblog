@@ -86,16 +86,16 @@ class Application
         return app.set('settings').backgroundColor
       bgimageurl: (req, res) ->
         bgimage = app.set('settings').backgroundImage
-        if app.viewHelpers.album
+        if app._locals.album
           return '../img/backgrounds/' + bgimage
-        else if app.viewHelpers.picture
+        else if app._locals.picture
           return '../../img/backgrounds/' + bgimage
         else
           return '/img/backgrounds/' + bgimage
 
       # returns array of pagination objects
       pagination: (req, res) ->
-        pages = app.viewHelpers.pageCount
+        pages = app._locals.pageCount
         if pages <= 1
           return null
         else
@@ -258,10 +258,10 @@ class Application
 
         # Default controller
         app.get '*', (req, res, next) ->
-          app.viewHelpers.pageCount = 0
-          app.viewHelpers.pagetitle = ''
-          app.viewHelpers.album = null
-          app.viewHelpers.picture = null
+          app._locals.pageCount = 0
+          app._locals.pagetitle = ''
+          app._locals.album = null
+          app._locals.picture = null
           next()
 
         # Include controllers

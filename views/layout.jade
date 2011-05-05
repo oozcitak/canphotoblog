@@ -88,19 +88,19 @@ html.no-js( lang: "en" )
       a.rss( href: "/rss" ) rss
 
     script( src: "//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js" )
-    :javascript
+    script
       | !window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))
     script( src: "/js/plugins.js" )
     script( src: "/js/script.js" )
 
     - if (gakey)
-      :javascript
-        | var _gaq = [['_setAccount', '#{gakey}'], ['_trackPageview']];
-        |  (function(d, t) {
-        |   var g = d.createElement(t),
-        |       s = d.getElementsByTagName(t)[0];
-        |   g.async = true;
-        |   g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        |   s.parentNode.insertBefore(g, s);
-        |  })(document, 'script');
+      script
+        var _gaq = [['_setAccount', '#{gakey}'], ['_trackPageview']];
+        (function(d, t) {
+         var g = d.createElement(t),
+             s = d.getElementsByTagName(t)[0];
+         g.async = true;
+         g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         s.parentNode.insertBefore(g, s);
+        })(document, 'script');
 
