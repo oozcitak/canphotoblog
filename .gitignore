@@ -1,6 +1,8 @@
 lib/
-logs/
+logs/*
 uploads/
 public/albums/
 public/thumbs/
 album.sqlite
+node_modules/
+!.gitignore
