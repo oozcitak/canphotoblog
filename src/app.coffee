@@ -37,11 +37,11 @@ class Application
  
     # Configuration for production and development
     app.configure () ->
-      app.use express.bodyDecoder()
-      app.use express.cookieDecoder()
-      app.use express.session()
+      app.use express.bodyParser()
+      app.use express.cookieParser()
+      app.use express.session({ secret: '#22agustos' })
       app.use express.logger()
-      app.use express.staticProvider(path.join(appRoot, 'public'))
+      app.use express.static(path.join(appRoot, 'public'))
 
     app.configure 'development', () ->
       app.use express.errorHandler {
