@@ -189,7 +189,7 @@ module.exports = {
     if parts.length is 2 then t = parts[1]
     dp = d.split ':'
     tp = t.split ':'
-    return new Date dp[0], dp[1], dp[2], tp[0], tp[1], tp[2], 0
+    return new Date dp[0], dp[1] - 1, dp[2], tp[0], tp[1], tp[2], 0
 
 }
 
