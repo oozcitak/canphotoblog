@@ -15,7 +15,7 @@ class Comments
     @akismetClient = akismetClient
 
 
-  # Gets the comment the given id
+  # Gets the comment with the given id
   #
   # id: comment id
   # callback: err, comment object

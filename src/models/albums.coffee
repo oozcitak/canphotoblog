@@ -97,7 +97,7 @@ class Albums
       # get album
       () ->
         self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture" IS NULL', [name], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture" IS NULL ORDER BY "dateCommented" DESC', [name], @parallel()
         self.countPictures name, @parallel()
         self.getPictures name, page, count, @parallel()
         return undefined

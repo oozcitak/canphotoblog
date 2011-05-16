@@ -33,7 +33,7 @@ class Pictures
       () ->
         self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel()
         self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=?', [album, pic], @parallel()
+        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=? ORDER BY "dateCommented" DESC', [album, pic], @parallel()
         return undefined
       
       # read picture
