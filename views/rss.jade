@@ -1,8 +1,8 @@
 !!! xml
-feed{ xmlns: "http://www.w3.org/2005/Atom" }
+feed( xmlns: "http://www.w3.org/2005/Atom" )
   title= apptitle
-  link{ href: appurl }
-  link{ href: rssurl, rel: "self" }
+  link( href: appurl )
+  link( href: rssurl, rel: "self" )
   author
     name= author
   updated= rsstime
@@ -11,10 +11,14 @@ feed{ xmlns: "http://www.w3.org/2005/Atom" }
   - each album in albums
     entry
       title= album.displayName
-      link{ href: album.url }
+      link( href: album.url )
       id= appurl + ':albums' + ':' + album.name + '/'
       published= album.dateCreated
       updated= album.dateCreated
-      - if (album.text)
-        = parse(album.text)
+      content( type: "html" )
+        | &lt;p&gt;
+        | &lt;img src="
+        = appurl + album.thumbnail
+        | " /&gt;
+        | &lt;/p&gt;
 

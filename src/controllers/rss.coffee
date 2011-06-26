@@ -38,6 +38,7 @@ app.get '/rss', (req, res) ->
       res.render 'rss', {
           layout: false,
           locals: {
+            appurl: appurl
             albums: rows
             author: settings.appAuthor
             rssurl: rssurl
