@@ -231,6 +231,30 @@ app.post '/pictures/edit', (req, res) ->
         if err then throw err
         res.redirect '/albums/' + album
       return
+    if req.body.rotateleft?
+      pictures.rotate album, picture, -90, (err) ->
+        if err then throw err
+
+        # delete old thumbnail
+        pic = path.basename picture, path.extname(picture)
+        thumb  = path.join settings.thumbDir, album, pic + '.png'
+        fs.unlinkSync thumb
+
+        res.redirect '/albums/' + album
+      return
+    if req.body.rotateright?
+      pictures.rotate album, picture, 90, (err) ->
+        if err then throw err
+
+
+        # delete old thumbnail
+        pic = path.basename picture, path.extname(picture)
+        thumb  = path.join settings.thumbDir, album, pic + '.png'
+        fs.unlinkSync thumb
+
+        res.redirect '/albums/' + album
+      return
+
 
     step(
 

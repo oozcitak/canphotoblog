@@ -82,6 +82,45 @@ module.exports = {
     )
 
 
+  # Rotates an image
+  #
+  # source: path to source image
+  # angle: rotation angle
+  # callback: err
+  rotate: (source, angle, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+    sourceDir = path.dirname source
+
+    step(
+
+      # check if source image exists
+      () ->
+        cutil.fileExists source, @
+        return undefined
+
+      # rotate
+      (err, exists) ->
+        if err then throw err
+        if not exists then return null
+
+        args = [
+          '-rotate',
+          angle,
+          source
+        ]
+        im.mogrify args, @
+        return undefined
+
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+
   # Makes thumbnail images for all images in the source folder.
   # Thumbnails are saved to the destination folder.
   #

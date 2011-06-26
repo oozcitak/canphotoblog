@@ -3,6 +3,7 @@ step = require 'step'
 path = require 'path'
 util = require 'util'
 cutil = require '../libs/util'
+im = require '../libs/img'
 
 
 class Pictures
@@ -173,6 +174,31 @@ class Pictures
         self.db.execute 'DELETE FROM "Comments" WHERE "album"=? and "picture"=?', [album, pic], group()
         self.db.execute 'DELETE FROM "Pictures" WHERE "album"=? and "name"=?', [album, pic], group()
         fs.unlink path.join(self.albumDir, album, pic), group()
+        return undefined
+      
+      # execute callback
+      (err) ->
+        if err then throw err
+        callback err
+    )
+
+
+  # Rotates a picture
+  #
+  # album: album name
+  # pic: picture name
+  # angle: rotation angle
+  # callback: err
+  rotate: (album, pic, angle, callback) ->
+
+    callback = cutil.ensureCallback callback
+    self = @
+
+    step(
+
+      # rotate picture
+      () ->
+        im.rotate path.join(self.albumDir, album, pic), angle, @
         return undefined
       
       # execute callback
