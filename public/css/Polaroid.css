@@ -110,5 +110,5 @@ ul.gallery li .thumb { -moz-transition: -moz-transform .15s linear; -webkit-tran
 .button-box a.edit   { background-image: url(../img/edit.png); }
 .button-box a.flag   { background-image: url(../img/flag.png); }
 .button-box a.add    { background-image: url(../img/add.png); }
-.button-box a.check  { background-image: url(../img/delete.png); }
+.button-box a.check  { background-image: url(../img/check.png); }
 
