@@ -27,13 +27,13 @@ class Comments
 
       # read comment
       () ->
-        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        self.db.get 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
         return undefined
  
       #execute callback
-      (err, comments) ->
+      (err, comment) ->
         if err then throw err
-        callback err, comments[0]
+        callback err, comment
          
     )
 
@@ -70,7 +70,7 @@ class Comments
         if not spam? then spam = false
         spam = if spam then 1 else 0
         params = [album, name, text, cutil.dateToSQLite(), spam, ip]
-        self.db.execute 'INSERT INTO "Comments" ("album", "from", "text", "dateCommented", "spam", "ip") ' +
+        self.db.run 'INSERT INTO "Comments" ("album", "from", "text", "dateCommented", "spam", "ip") ' +
           ' VALUES (?, ?, ?, ?, ?, ?)', params, @
         return undefined
 
@@ -114,7 +114,7 @@ class Comments
         if not spam? then spam = false
         spam = if spam then 1 else 0
         params = [album, picture, name, text, cutil.dateToSQLite(), spam, ip]
-        self.db.execute 'INSERT INTO "Comments" ("album", "picture", "from", "text", "dateCommented", "spam", "ip") ' +
+        self.db.run 'INSERT INTO "Comments" ("album", "picture", "from", "text", "dateCommented", "spam", "ip") ' +
           ' VALUES (?, ?, ?, ?, ?, ?, ?)', params, @
         return undefined
 
@@ -136,12 +136,12 @@ class Comments
     step(
 
       () ->
-        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0', @
+        self.db.get 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0', @
         return undefined
 
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0].count
+        callback err, row.count
     )
 
 
@@ -159,7 +159,7 @@ class Comments
 
       # read comments
       () ->
-        self.db.execute 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0 ORDER BY "dateCommented" DESC LIMIT ' +
+        self.db.all 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=0 ORDER BY "dateCommented" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @
         return undefined
 
@@ -187,12 +187,12 @@ class Comments
     step(
 
       () ->
-        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1', @
+        self.db.get 'SELECT COUNT(*) AS "count" FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1', @
         return undefined
 
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0].count
+        callback err, row.count
     )
 
 
@@ -210,7 +210,7 @@ class Comments
 
       # read comments
       () ->
-        self.db.execute 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1 ORDER BY "dateCommented" DESC LIMIT ' +
+        self.db.all 'SELECT * FROM "Comments" WHERE "picture" IS NOT NULL AND "spam"=1 ORDER BY "dateCommented" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @
         return undefined
 
@@ -241,7 +241,7 @@ class Comments
 
       # delete comment
       () ->
-        self.db.execute 'UPDATE "Comments" SET "from"=?, "text"=? WHERE "id"=?', [name, text, id], @
+        self.db.run 'UPDATE "Comments" SET "from"=?, "text"=? WHERE "id"=?', [name, text, id], @
         return undefined
 
       #execute callback
@@ -264,7 +264,7 @@ class Comments
 
       # delete comment
       () ->
-        self.db.execute 'DELETE FROM "Comments" WHERE "id"=?', [id], @
+        self.db.run 'DELETE FROM "Comments" WHERE "id"=?', [id], @
         return undefined
 
       #execute callback
@@ -287,15 +287,14 @@ class Comments
 
       # read comment
       () ->
-        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        self.db.get 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
         return undefined
  
       # send feedback and mark comment
-      (err, comments) ->
+      (err, comment) ->
         if err then throw err
-        comment = comments[0]
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "spam"=1 WHERE "id"=?', [id], group()
+        self.db.run 'UPDATE "Comments" SET "spam"=1 WHERE "id"=?', [id], group()
         if self.akismetClient
           self.akismetClient.submitSpam { comment_author: comment.from, comment_content: comment.text, user_ip: comment.ip }, group()
         return undefined
@@ -320,15 +319,14 @@ class Comments
 
       # read comment
       () ->
-        self.db.execute 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
+        self.db.get 'SELECT * FROM "Comments" WHERE "id"=?', [id], @
         return undefined
  
       # send feedback and mark comment
-      (err, comments) ->
+      (err, comment) ->
         if err then throw err
-        comment = comments[0]
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "spam"=0 WHERE "id"=?', [id], group()
+        self.db.run 'UPDATE "Comments" SET "spam"=0 WHERE "id"=?', [id], group()
         if self.akismetClient
           self.akismetClient.submitHam { comment_author: comment.from, comment_content: comment.text, user_ip: comment.ip }, group()
         return undefined

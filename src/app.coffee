@@ -5,7 +5,7 @@ util = require 'util'
 url = require 'url'
 step = require 'step'
 akismet = require 'akismet'
-sqlite = require 'sqlite'
+sqlite = require 'sqlite3'
 markdown = require 'markdown-js'
 jade = require 'jade'
 cutil = require './libs/util'
@@ -145,9 +145,8 @@ class Application
       (err, exists) ->
         if err then throw err
         dbexists = exists
-        db = new sqlite.Database()
+        db = new sqlite.Database settings.dbFile, @
         app.set 'db', db
-        db.open settings.dbFile, @
         return undefined
 
       # make database if it does not exist
@@ -157,7 +156,7 @@ class Application
         if dbexists
           return null
         else
-          db.executeScript 'DROP TABLE IF EXISTS "Albums";' +
+          db.exec 'DROP TABLE IF EXISTS "Albums";' +
             'DROP TABLE IF EXISTS "Pictures";' +
             'DROP TABLE IF EXISTS "Comments";' +
             'DROP TABLE IF EXISTS "Settings";' +
@@ -193,7 +192,7 @@ class Application
       # read settings
       (err) ->
         if err then throw err
-        db.execute 'SELECT * FROM "Settings"', @
+        db.all 'SELECT * FROM "Settings"', @
         return undefined
 
       # add to app settings

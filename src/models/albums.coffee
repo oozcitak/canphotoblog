@@ -27,12 +27,12 @@ class Albums
     step(
 
       () ->
-        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Albums"', @
+        self.db.get 'SELECT COUNT(*) AS "count" FROM "Albums"', @
         return undefined
 
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0].count
+        callback err, row.count
     )
 
 
@@ -51,11 +51,11 @@ class Albums
 
       # read albums
       () ->
-        self.db.execute 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count"
+        self.db.all 'SELECT "Albums".*, "Pictures"."name" AS "thumbnail", COUNT("Pictures"."id") AS "count"
             FROM "Albums" LEFT JOIN "Pictures" ON "Albums"."name" = "Pictures"."album"
             GROUP BY "id" ORDER BY "name" DESC LIMIT ' +
             (page - 1) * count + ',' + count, @parallel()
-        self.db.execute 'SELECT "album", COUNT("album") AS "count" FROM "Comments"
+        self.db.all 'SELECT "album", COUNT("album") AS "count" FROM "Comments"
             WHERE "spam"=0 GROUP BY "album"', @parallel()
             
         return undefined
@@ -96,8 +96,8 @@ class Albums
 
       # get album
       () ->
-        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture" IS NULL ORDER BY "dateCommented" DESC', [name], @parallel()
+        self.db.all 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [name], @parallel()
+        self.db.all 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture" IS NULL ORDER BY "dateCommented" DESC', [name], @parallel()
         self.countPictures name, @parallel()
         self.getPictures name, page, count, @parallel()
         return undefined
@@ -135,13 +135,13 @@ class Albums
 
       # get pictures
       () ->
-        self.db.execute 'SELECT COUNT(*) AS "count" FROM "Pictures" WHERE "album"=?', [name], @
+        self.db.get 'SELECT COUNT(*) AS "count" FROM "Pictures" WHERE "album"=?', [name], @
         return undefined
       
       # read pictures
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0].count
+        callback err, row.count
     )
 
 
@@ -160,9 +160,9 @@ class Albums
 
       # get pictures
       () ->
-        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" 
+        self.db.all 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" 
             ASC LIMIT ' + (page - 1) * count + ',' + count, [name], @parallel()
-        self.db.execute 'SELECT "picture", COUNT("picture") AS "count" FROM "Comments" WHERE "album"=? 
+        self.db.all 'SELECT "picture", COUNT("picture") AS "count" FROM "Comments" WHERE "album"=? 
             AND "spam"=0 AND NOT "picture" IS NULL GROUP BY "picture"', [name], @parallel()
         return undefined
 
@@ -201,7 +201,7 @@ class Albums
 
       # edit album
       () ->
-        self.db.execute 'UPDATE "Albums" SET "title"=?, "text"=? WHERE "name"=?', [title, text, album], @
+        self.db.run 'UPDATE "Albums" SET "title"=?, "text"=? WHERE "name"=?', [title, text, album], @
         return undefined
       
       # execute callback
@@ -224,16 +224,16 @@ class Albums
 
       #get all pictures
       () ->
-        self.db.execute 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
+        self.db.all 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
         return undefined
 
       #delete pictures
       (err, pics) ->
         if err then throw err
         group = @group()
-        self.db.execute 'DELETE FROM "Comments" WHERE "album"=?', [album], group()
-        self.db.execute 'DELETE FROM "Pictures" WHERE "album"=?', [album], group()
-        self.db.execute 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
+        self.db.run 'DELETE FROM "Comments" WHERE "album"=?', [album], group()
+        self.db.run 'DELETE FROM "Pictures" WHERE "album"=?', [album], group()
+        self.db.run 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
         for pic in pics
           fs.unlink path.join(self.albumDir, album, pic.name), group()
         return undefined
@@ -266,9 +266,9 @@ class Albums
       # rename
       () ->
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [newname, album], group()
-        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [newname, album], group()
-        self.db.execute 'UPDATE "Albums" SET "name"=? WHERE "name"=?', [newname, album], group()
+        self.db.run 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [newname, album], group()
+        self.db.run 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [newname, album], group()
+        self.db.run 'UPDATE "Albums" SET "name"=? WHERE "name"=?', [newname, album], group()
         fs.rename path.join(self.albumDir, album), path.join(self.albumDir, newname), group()
         return undefined
 
@@ -294,16 +294,16 @@ class Albums
 
       #get all pictures
       () ->
-        self.db.execute 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
+        self.db.all 'SELECT "name" FROM "Pictures" WHERE "album"=?', [album], @
         return undefined
 
       # rename
       (err, pics) ->
         if err then throw err
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [target, album], group()
-        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [target, album], group()
-        self.db.execute 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
+        self.db.run 'UPDATE "Comments" SET "album"=? WHERE "album"=?', [target, album], group()
+        self.db.run 'UPDATE "Pictures" SET "album"=? WHERE "album"=?', [target, album], group()
+        self.db.run 'DELETE FROM "Albums" WHERE "name"=?', [album], group()
         for pic in pics
           fs.rename path.join(self.albumDir, album, pic.name), path.join(self.albumDir, target, pic.name), group()
         return undefined

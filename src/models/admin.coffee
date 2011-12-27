@@ -54,10 +54,10 @@ class Admin
         monitor.restart()
 
         group = @group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appName, 'appName'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appTitle, 'appTitle'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appAuthor, 'appAuthor'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [monitorInterval, 'monitorInterval'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appName, 'appName'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appTitle, 'appTitle'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [appAuthor, 'appAuthor'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [monitorInterval, 'monitorInterval'], group()
         return undefined
 
       # execute callback
@@ -95,9 +95,9 @@ class Admin
         monitor.restart()
 
         group = @group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [albumsPerPage, 'albumsPerPage'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [picturesPerPage, 'picturesPerPage'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [thumbSize, 'thumbSize'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [albumsPerPage, 'albumsPerPage'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [picturesPerPage, 'picturesPerPage'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [thumbSize, 'thumbSize'], group()
         return undefined
 
       # execute callback
@@ -132,9 +132,9 @@ class Admin
         app.set 'settings', settings
 
         group = @group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [allowComments, 'allowComments'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [akismetKey, 'akismetKey'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [akismetURL, 'akismetURL'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [allowComments, 'allowComments'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [akismetKey, 'akismetKey'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [akismetURL, 'akismetURL'], group()
         return undefined
 
       # create akismet client
@@ -180,7 +180,7 @@ class Admin
         app.set 'settings', settings
 
         group = @group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [gaKey, 'gaKey'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [gaKey, 'gaKey'], group()
         return undefined
 
       # execute callback
@@ -277,9 +277,9 @@ class Admin
         app.set 'settings', settings
 
         group = @group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [style, 'style'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgcolor, 'backgroundColor'], group()
-        self.db.execute 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgimage, 'backgroundImage'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [style, 'style'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgcolor, 'backgroundColor'], group()
+        self.db.run 'UPDATE "Settings" SET "value"=? WHERE "name"=?', [bgimage, 'backgroundImage'], group()
         return undefined
 
       # execute callback
@@ -304,7 +304,7 @@ class Admin
 
       # read pictures
       () ->
-        self.db.execute 'SELECT "album", "name" FROM "Pictures"', @
+        self.db.all 'SELECT "album", "name" FROM "Pictures"', @
         return undefined
 
       # make thumbnails

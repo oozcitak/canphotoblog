@@ -32,9 +32,9 @@ class Pictures
 
       # get picture
       () ->
-        self.db.execute 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel()
-        self.db.execute 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel()
-        self.db.execute 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=? ORDER BY "dateCommented" ASC', [album, pic], @parallel()
+        self.db.all 'SELECT * FROM "Pictures" WHERE "album"=? ORDER BY "dateTaken" ASC', [album], @parallel()
+        self.db.all 'SELECT * FROM "Albums" WHERE "name"=? LIMIT 1', [album], @parallel()
+        self.db.all 'SELECT * FROM "Comments" WHERE "spam"=0 AND "album"=? AND "picture"=? ORDER BY "dateCommented" ASC', [album, pic], @parallel()
         return undefined
       
       # read picture
@@ -96,13 +96,13 @@ class Pictures
 
       # get picture
       () ->
-        self.db.execute 'SELECT "name", "album" FROM "Pictures" WHERE "album"=? AND "name" LIKE ? LIMIT 1', [album, pic + '%'], @
+        self.db.get 'SELECT "name", "album" FROM "Pictures" WHERE "album"=? AND "name" LIKE ? LIMIT 1', [album, pic + '%'], @
         return undefined
       
       # return picture
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0]
+        callback err, row
 
     )
 
@@ -119,13 +119,13 @@ class Pictures
 
       # get picture
       () ->
-        self.db.execute 'SELECT "name", "album" FROM "Pictures" ORDER BY RANDOM() LIMIT 1', @
+        self.db.get 'SELECT "name", "album" FROM "Pictures" ORDER BY RANDOM() LIMIT 1', @
         return undefined
       
       # return picture
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
-        callback err, rows[0]
+        callback err, row
 
     )
 
@@ -146,7 +146,7 @@ class Pictures
 
       # edit picture
       () ->
-        self.db.execute 'UPDATE "Pictures" SET "title"=?, "text"=? WHERE "album"=? AND "name"=?', [title, text, album, pic], @
+        self.db.run 'UPDATE "Pictures" SET "title"=?, "text"=? WHERE "album"=? AND "name"=?', [title, text, album, pic], @
         return undefined
       
       # execute callback
@@ -171,8 +171,8 @@ class Pictures
       # delete picture
       () ->
         group = @group()
-        self.db.execute 'DELETE FROM "Comments" WHERE "album"=? and "picture"=?', [album, pic], group()
-        self.db.execute 'DELETE FROM "Pictures" WHERE "album"=? and "name"=?', [album, pic], group()
+        self.db.run 'DELETE FROM "Comments" WHERE "album"=? and "picture"=?', [album, pic], group()
+        self.db.run 'DELETE FROM "Pictures" WHERE "album"=? and "name"=?', [album, pic], group()
         fs.unlink path.join(self.albumDir, album, pic), group()
         return undefined
       
@@ -224,8 +224,8 @@ class Pictures
       # rename picture
       () ->
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "picture"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
-        self.db.execute 'UPDATE "Pictures" SET "name"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
+        self.db.run 'UPDATE "Comments" SET "picture"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
+        self.db.run 'UPDATE "Pictures" SET "name"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
         fs.rename path.join(self.albumDir, album, pic), path.join(self.albumDir, album, target), group()
         return undefined
       
@@ -262,7 +262,7 @@ class Pictures
           return null
         else
           fs.mkdir path.join(self.albumDir, target), 0755, @parallel()
-          self.db.execute 'INSERT INTO "Albums" ("name", "dateCreated") 
+          self.db.run 'INSERT INTO "Albums" ("name", "dateCreated") 
             SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM "Albums" WHERE "name"=?)',
             [album, cutil.dateToSQLite(), album], @parallel()
           return undefined
@@ -271,8 +271,8 @@ class Pictures
       (err) ->
         if err then throw err
         group = @group()
-        self.db.execute 'UPDATE "Comments" SET "album"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
-        self.db.execute 'UPDATE "Pictures" SET "album"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
+        self.db.run 'UPDATE "Comments" SET "album"=? WHERE "album"=? and "picture"=?', [target, album, pic], group()
+        self.db.run 'UPDATE "Pictures" SET "album"=? WHERE "album"=? and "name"=?', [target, album, pic], group()
         fs.rename path.join(self.albumDir, album, pic), path.join(self.albumDir, target, pic), group()
         return undefined
       

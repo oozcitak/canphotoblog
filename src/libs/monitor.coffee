@@ -1,7 +1,7 @@
 path = require 'path'
 fs = require 'fs'
 step = require 'step'
-sqlite = require 'sqlite'
+sqlite = require 'sqlite3'
 util = require 'util'
 cutil = require './util'
 im = require './img'
@@ -91,14 +91,14 @@ class UploadMonitor
 
         group = @group()
         for album in albums
-          self.db.execute albumSQL, [album, cutil.dateToSQLite(), album], group()
+          self.db.run albumSQL, [album, cutil.dateToSQLite(), album], group()
         for pic in pictures
           picdate = ''
           if pic.dateTaken
             picdate = cutil.dateToSQLite(pic.dateTaken)
           else if pic.dateModified
             picdate = cutil.dateToSQLite(pic.dateModified)
-          self.db.execute pictureSQL, [pic.name, picdate, pic.album, pic.name, pic.album], group()
+          self.db.rub pictureSQL, [pic.name, picdate, pic.album, pic.name, pic.album], group()
 
         return undefined
 

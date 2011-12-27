@@ -27,16 +27,16 @@ class Users
 
       # get user
       () ->
-        self.db.execute 'SELECT * FROM "Users" WHERE "name"=? LIMIT 1', [username], @
+        self.db.get 'SELECT * FROM "Users" WHERE "name"=? LIMIT 1', [username], @
         return undefined
 
       # check password
-      (err, rows) ->
+      (err, row) ->
         if err then throw err
 
         user = null
-        if rows and rows.length is 1 and cutil.checkHash password, rows[0].password
-          user = rows[0]
+        if row and cutil.checkHash password, row.password
+          user = row
 
         callback err, user
 
@@ -56,7 +56,7 @@ class Users
 
       # get user
       () ->
-        self.db.execute 'SELECT * FROM "Users" WHERE "id"=? LIMIT 1', [id], @
+        self.db.get 'SELECT * FROM "Users" WHERE "id"=? LIMIT 1', [id], @
         return undefined
 
       # read user
@@ -64,7 +64,7 @@ class Users
         if err then throw err
 
         user = null
-        if rows and rows.length is 1 then user = rows[0]
+        if row then user = row
 
         callback err, user
 
@@ -86,7 +86,7 @@ class Users
       # get user
       () ->
         hash = cutil.makeHash password
-        self.db.execute 'UPDATE "Users" SET "password"=? WHERE "id"=?', [hash, id], @
+        self.db.run 'UPDATE "Users" SET "password"=? WHERE "id"=?', [hash, id], @
         return undefined
 
       # execute callback

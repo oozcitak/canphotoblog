@@ -6,7 +6,7 @@ Licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.
 You will need `imagemagick` and `sqlite3` installed. You will also need the following node.js packages:
 
 ``` sh
-npm install coffee-script express step akismet sqlite markdown-js jade
+npm install coffee-script express step akismet sqlite3 markdown-js jade
 ```
 
 Now clone the `canphotoblog` repository and build it:
