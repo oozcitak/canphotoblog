@@ -33,6 +33,7 @@ class UploadMonitor
   start: () ->
     self = @
     util.log 'Upload monitor starting.'
+    self.processUploads()
     self.timer = setInterval () ->
         self.processUploads()
       , self.watchInterval
@@ -54,6 +55,7 @@ class UploadMonitor
   # Processes the pictures in the uploads folder
   processUploads: () ->
 
+    util.log 'Processing uploads.'
     self = @
     if self.readingAlbums then return
     self.readingAlbums = true
@@ -98,7 +100,7 @@ class UploadMonitor
             picdate = cutil.dateToSQLite(pic.dateTaken)
           else if pic.dateModified
             picdate = cutil.dateToSQLite(pic.dateModified)
-          self.db.rub pictureSQL, [pic.name, picdate, pic.album, pic.name, pic.album], group()
+          self.db.run pictureSQL, [pic.name, picdate, pic.album, pic.name, pic.album], group()
 
         return undefined
 
