@@ -49,39 +49,3 @@ ul.gallery
         input( type: "submit", name: "move", id: "move", value: "Move Pictures" )
         input( type: "submit", name: "delete", id: "delete", value: "Delete Album" )
 
-
-- if (album.comments.length)
-  ul.comments
-    - each comment in album.comments
-      li
-        - if (user)
-          .button-box
-            a.edit( href: '/comments/edit/' + comment.id, title: 'edit' ) &nbsp;
-            a.delete( href: '/comments/delete/' + comment.id, title: 'delete' ) &nbsp;
-            a.flag( href: '/comments/spam/' + comment.id, title: 'mark as spam' ) &nbsp;
-        .from= comment.from + ' (' + comment.dateCommented.split(' ').shift() + '): '
-        .text
-          != parse(comment.text)
-
-
-- if (settings.allowComments)
-  .gendiv
-
-    h1
-      Add Comment
-
-    form( method: "post", action: "/comments/add" )
-      input( type: "hidden", name: "album", value: album.name )
-
-      p
-        label( for: "from" ) From:
-        input( type: "text", name: "from", id: "from" )
-
-      p
-        label( for: "text" ) Comment:
-        textarea( name: "text", id: "text" )
-
-      p
-        label( for: "submitcomment" )
-        input( type: "submit", name: "submitcomment", id: "submitcomment", value: "Post Comment" )
-

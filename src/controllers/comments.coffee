@@ -84,8 +84,9 @@ app.post '/comments/add', (req, res) ->
       comments.addToPicture album, picture, name, text, req, (err) ->
         res.redirect '/pictures/' + album + '/' + picture
     else
-      comments.addToAlbum album, name, text, req, (err) ->
-        res.redirect '/albums/' + album
+      throw new Error('Album comments not allowed.')
+      res.redirect '/'
+
   else
     throw new Error('Comments not allowed.')
     res.redirect '/'
